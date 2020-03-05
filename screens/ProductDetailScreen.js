@@ -10,6 +10,8 @@ const ProductsDetailScreen = props => {
     product => product.id === productId
   );
 
+  /* to avoid re-renders of the setParams, 
+  in the absence of this method it loops unlimitedly*/
   useEffect(() => {
     props.navigation.setParams({ title: selectedProduct.title });
   }, [selectedProduct]);
