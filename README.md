@@ -1,9 +1,10 @@
 # Udemy Project III
 
-'''
-javascript
+```javascript
 
 const a = b
 const a = c
 
-'''
+```
+
+
