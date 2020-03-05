@@ -1,33 +1,34 @@
 import React from "react";
-import { View, FlatList, StyleSheet, Text, Image } from "react-native";
+import { FlatList } from "react-native";
 import { useSelector } from "react-redux";
+
+import Product from "../components/Product";
 
 const ProductOverviewScreen = props => {
   const availableProducts = useSelector(state => state.products.products);
 
   const renderProductItem = itemData => {
+    const selectProductHandler = () => {
+      props.navigation.navigate({
+        routeName: "productsDetail",
+        params: {
+          productId: itemData.item.id
+        }
+      });
+    };
+
     return (
-      <View style={styles.productItem}>
-        <Image source={{ uri: itemData.item.imageUrl }} style={styles.image} />
-        <Text>{itemData.item.title}</Text>
-      </View>
+      <Product
+        image={itemData.item.imageUrl}
+        title={itemData.item.title}
+        price={itemData.item.price}
+        onSelectProduct={selectProductHandler}
+      />
     );
   };
 
   return <FlatList data={availableProducts} renderItem={renderProductItem} />;
 };
-
-const styles = StyleSheet.create({
-  productItem: {
-    width:'100%',
-    height:200,
-    margin:10
-  },
-  image:{
-    width:'100%',
-    height:'100%'
-  }
-});
 
 ProductOverviewScreen.navigationOptions = {
   headerTitle: "Products"
