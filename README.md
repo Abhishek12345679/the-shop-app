@@ -9,4 +9,6 @@ const a = c
 
 >hiteshchow
 
+~~1000~~
+
 
