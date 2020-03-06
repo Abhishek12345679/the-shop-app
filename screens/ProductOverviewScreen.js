@@ -1,6 +1,7 @@
 import React from "react";
-import { FlatList } from "react-native";
+import { FlatList, View, StyleSheet } from "react-native";
 import { useSelector } from "react-redux";
+import { StatusBar } from "react-native";
 
 import Product from "../components/Product";
 
@@ -27,11 +28,27 @@ const ProductOverviewScreen = props => {
     );
   };
 
-  return <FlatList data={availableProducts} renderItem={renderProductItem} />;
+  return (
+    <View style={styles.screen}>
+      <StatusBar backgroundColor="black" barStyle="dark-content" />
+      <FlatList
+        data={availableProducts}
+        renderItem={renderProductItem}
+        contentContainerStyle={{ marginHorizontal: 10 }}
+      />
+    </View>
+  );
 };
 
 ProductOverviewScreen.navigationOptions = {
   headerTitle: "Products"
 };
+
+const styles = StyleSheet.create({
+  screen: {
+    padding: 0,
+    marginHorizontal: 0
+  }
+});
 
 export default ProductOverviewScreen;
