@@ -5,11 +5,15 @@ import { createStore, combineReducers } from "redux";
 
 import productsReducer from "./store/reducers/products";
 import ProductsNavigator from "./navigation/ProductsNavigator";
+import cartReducer from "./store/reducers/cart";
+
 import { AppLoading } from "expo";
+// import { composeWithDevTools } from "redux-devtools-extension";
 
 export default function App() {
   const rootReducer = combineReducers({
-    products: productsReducer
+    products: productsReducer,
+    cart: cartReducer
   });
 
   const store = createStore(rootReducer);
@@ -18,7 +22,7 @@ export default function App() {
 
   const fetchFonts = () => {
     Font.loadAsync({
-      'russo': require("./assets/fonts/RussoOne-Regular.ttf"),
+      "russo": require("./assets/fonts/RussoOne-Regular.ttf"),
       "source-code": require("./assets/fonts/SourceCodePro-Regular.ttf"),
       "source-code-bold": require("./assets/fonts/SourceCodePro-Bold.ttf")
     });

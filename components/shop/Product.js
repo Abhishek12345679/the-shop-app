@@ -1,11 +1,15 @@
 import React from "react";
-import { Text, View, StyleSheet, Image, Button } from "react-native";
+import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Icon } from "react-native-elements";
 
-import Card from "../components/Card";
-import { TouchableOpacity } from "react-native";
+import Card from "../UI/Card";
+
+import { useDispatch } from "react-redux";
+import * as cartActions from "../../store/actions/cart";
 
 const Product = props => {
+  const dispatch = useDispatch();
+
   return (
     <TouchableOpacity
       onPress={props.onSelectProduct}
@@ -32,7 +36,7 @@ const Product = props => {
               containerStyle={{ marginBottom: 5 }}
               color="green"
               onPress={() => {
-                console.log("clicked add to cart button");
+                dispatch(cartActions.addToCart(props.item));
               }}
             />
           </View>

@@ -1,9 +1,12 @@
 import React from "react";
-import { FlatList, View, StyleSheet } from "react-native";
+import { FlatList, View, StyleSheet, Platform } from "react-native";
 import { useSelector } from "react-redux";
 import { StatusBar } from "react-native";
 
-import Product from "../components/Product";
+import Product from "../components/shop/Product";
+
+import { HeaderButtons, Item } from "react-navigation-header-buttons";
+import HeaderButton from "../components/UI/HeaderButton";
 
 const ProductOverviewScreen = props => {
   const availableProducts = useSelector(state => state.products.products);
@@ -13,7 +16,8 @@ const ProductOverviewScreen = props => {
       props.navigation.navigate({
         routeName: "productsDetail",
         params: {
-          productId: itemData.item.id
+          productId: itemData.item.id,
+          productTitle: itemData.item.title
         }
       });
     };
@@ -24,6 +28,8 @@ const ProductOverviewScreen = props => {
         title={itemData.item.title}
         price={itemData.item.price}
         onSelectProduct={selectProductHandler}
+        productId={itemData.item.id}
+        item={itemData.item}
       />
     );
   };
@@ -41,7 +47,16 @@ const ProductOverviewScreen = props => {
 };
 
 ProductOverviewScreen.navigationOptions = {
-  headerTitle: "Products"
+  headerTitle: "Products",
+  headerRight: () => (
+    <HeaderButtons HeaderButtonComponent={HeaderButton}>
+      <Item
+        title="cart"
+        iconName={Platform.OS === "android" ? "md-cart" : "ios-cart"}
+        onPress={() => {}}
+      />
+    </HeaderButtons>
+  )
 };
 
 const styles = StyleSheet.create({

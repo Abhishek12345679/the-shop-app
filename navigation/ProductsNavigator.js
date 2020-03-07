@@ -15,8 +15,9 @@ const ProductsNavigator = createStackNavigator({
         },
         headerTitleStyle: {
             fontFamily: 'russo',
-            fontSize: 20
-        }
+            fontSize: 17
+        },
+        headerTintColor: Platform.OS === 'ios' ? Colors.primaryColor : ''
     }
 });
 

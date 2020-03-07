@@ -1,11 +1,16 @@
 import React, { useEffect } from "react";
 import { Text, View, Image, StyleSheet, ScrollView } from "react-native";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Icon } from "react-native-elements";
-import DefaultText from "../components/DefaultText";
+import DefaultText from "../components/UI/DefaultText";
+
+import * as cartActions from "../store/actions/cart";
 
 const ProductsDetailScreen = props => {
   const productId = props.navigation.getParam("productId");
+  // const productTitle = props.navigation.getParam("productTitle");
+
+  const dispatch = useDispatch();
 
   const availableProducts = useSelector(state => state.products.products);
   const selectedProduct = availableProducts.find(
@@ -14,9 +19,9 @@ const ProductsDetailScreen = props => {
 
   /* to avoid re-renders of the setParams, 
      in the absence of this method it loops unlimitedly */
-  useEffect(() => {
-    props.navigation.setParams({ title: selectedProduct.title });
-  }, [selectedProduct]);
+  // useEffect(() => {
+  //   props.navigation.setParams({ title: selectedProduct.title });
+  // }, [selectedProduct]);
 
   return (
     <ScrollView>
@@ -32,14 +37,20 @@ const ProductsDetailScreen = props => {
               name="ios-heart"
               type="ionicon"
               color="green"
-              onPress={() => console.log("hello")}
+              onPress={() => {
+                dispatch(cartActions.addToCart(selectedProduct));
+              }}
               style={styles.iconheart}
             />
           </View>
         </View>
         <View style={styles.textRowOne}>
-          <DefaultText style={styles.title}>{selectedProduct.title}</DefaultText>
-          <DefaultText style={{ color: "green" }}>₹{selectedProduct.price}</DefaultText>
+          <DefaultText style={styles.title}>
+            {selectedProduct.title}
+          </DefaultText>
+          <DefaultText style={{ color: "green" }}>
+            ₹{selectedProduct.price}
+          </DefaultText>
           <Text style={styles.textdesc}>{selectedProduct.description}</Text>
           <Text style={styles.textdesc}>
             Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio vitae
@@ -54,7 +65,7 @@ const ProductsDetailScreen = props => {
 };
 
 ProductsDetailScreen.navigationOptions = navData => {
-  const headerTitle = navData.navigation.getParam("title");
+  const headerTitle = navData.navigation.getParam("productTitle");
   return {
     headerTitle: headerTitle
   };
@@ -92,7 +103,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     bottom: 70,
     justifyContent: "space-around",
-    alignItems: "flex-end",
+    alignItems: "flex-end"
   },
   iconheart: {
     marginEnd: 10,
