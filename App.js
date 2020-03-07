@@ -8,7 +8,6 @@ import ProductsNavigator from "./navigation/ProductsNavigator";
 import cartReducer from "./store/reducers/cart";
 
 import { AppLoading } from "expo";
-// import { composeWithDevTools } from "redux-devtools-extension";
 
 export default function App() {
   const rootReducer = combineReducers({
@@ -24,7 +23,9 @@ export default function App() {
     Font.loadAsync({
       "russo": require("./assets/fonts/RussoOne-Regular.ttf"),
       "source-code": require("./assets/fonts/SourceCodePro-Regular.ttf"),
-      "source-code-bold": require("./assets/fonts/SourceCodePro-Bold.ttf")
+      "source-code-bold": require("./assets/fonts/SourceCodePro-Bold.ttf"),
+      'standard-apple': require('./assets/fonts/SF-Pro-Text-Regular.ttf'),
+      'standard-apple-bold': require('./assets/fonts/SF-Pro-Display-Bold.ttf')
     });
   };
 
