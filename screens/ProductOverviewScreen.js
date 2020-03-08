@@ -38,6 +38,7 @@ const ProductOverviewScreen = props => {
     <View style={styles.screen}>
       <StatusBar backgroundColor="black" barStyle="dark-content" />
       <FlatList
+        key={availableProducts.id}
         data={availableProducts}
         renderItem={renderProductItem}
         contentContainerStyle={{ marginHorizontal: 10 }}
@@ -55,7 +56,7 @@ ProductOverviewScreen.navigationOptions = navData => {
           title="cart"
           iconName={Platform.OS === "android" ? "md-cart" : "ios-cart"}
           onPress={() => {
-            navData.navigation.navigate('cartScreen')
+            navData.navigation.navigate("cartScreen");
           }}
         />
       </HeaderButtons>

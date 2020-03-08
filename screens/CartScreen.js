@@ -1,19 +1,30 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  Dimensions,
-  Button,
-  TouchableOpacity
-} from "react-native";
+import { View, Text, StyleSheet, FlatList } from "react-native";
 import Colors from "../constants/Colors";
 import { useSelector } from "react-redux";
+import CartItem from "../components/shop/CartItem";
+
+import { useDispatch } from "react-redux";
+import * as cartActions from "../store/actions/cart";
 
 const CartScreen = props => {
+  const dispatch = useDispatch();
+
   const cartTotalAmt = useSelector(state => state.cart.sum);
-  const cartItem = useSelector(state => state.cart.items);
+  const cartItem = useSelector(state => {
+    const transformedCartItems = [];
+    for (let key in state.cart.items) {
+      transformedCartItems.push({
+        productId: key,
+        productTitle: state.cart.items[key].productTitle,
+        productPrice: state.cart.items[key].productPrice,
+        quantity: state.cart.items[key].quantity,
+        totalSum: state.cart.items[key].sum,
+        productImageUrl: state.cart.items[key].imageUrl
+      });
+    }
+    return transformedCartItems;
+  });
 
   return (
     <View style={styles.screen}>
@@ -21,16 +32,28 @@ const CartScreen = props => {
         <View style={styles.titleTextContainer}>
           <Text style={styles.titleText}>Items</Text>
         </View>
-        <TouchableOpacity
-          onPress={() => {
-            console.log(cartItem);
-          }}
-        >
-          <View style={styles.productPriceContainer}>
-            <Text style={{ color: "#fff" }}>{cartTotalAmt}</Text>
-          </View>
-        </TouchableOpacity>
+
+        <View style={styles.productPriceContainer}>
+          <Text style={{ color: "#fff" }}>{cartTotalAmt}</Text>
+        </View>
       </View>
+      <FlatList
+        keyExtractor={item => item.productId}
+        data={cartItem}
+        renderItem={itemData => (
+          <CartItem
+            productTitle={itemData.item.productTitle}
+            productPrice={itemData.item.productPrice}
+            productSum={itemData.item.totalSum}
+            quantity={itemData.item.quantity}
+            productImage={itemData.item.productImageUrl}
+            productId={itemData.item.productId}
+            onRemove={() => {
+              dispatch(cartActions.removeFromCart(itemData.item.productId));
+            }}
+          />
+        )}
+      />
     </View>
   );
 };
