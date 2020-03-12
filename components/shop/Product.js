@@ -24,21 +24,24 @@ const Product = props => {
           <View style={styles.titlePriceColumn}>
             <Text>{props.title}</Text>
             <Text style={{ color: "green", fontWeight: "bold" }}>
-              ₹{props.price}
+              ₹{props.price.toFixed(2)}
             </Text>
           </View>
           <View styles={styles.addToCartIcon}>
-            <Icon
-              raised
-              name="ios-cart"
-              type="ionicon"
-              size={18}
-              containerStyle={{ marginBottom: 5 }}
-              color="green"
+            <TouchableOpacity
               onPress={() => {
                 dispatch(cartActions.addToCart(props.item));
               }}
-            />
+            >
+              <Icon
+                reverse
+                name="ios-cart"
+                type="ionicon"
+                size={18}
+                containerStyle={{ marginBottom: 5 }}
+                color="green"
+              />
+            </TouchableOpacity>
           </View>
         </View>
       </Card>
@@ -49,7 +52,7 @@ const Product = props => {
 const styles = StyleSheet.create({
   productItem: {
     width: "100%",
-    height: 250,
+    height: 200,
     flexDirection: "column",
     marginVertical: 10,
     borderRadius: 10

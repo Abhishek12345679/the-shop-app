@@ -49,7 +49,7 @@ const ProductsDetailScreen = props => {
             {selectedProduct.title}
           </DefaultText>
           <DefaultText style={{ color: "green" }}>
-            ₹{selectedProduct.price}
+            ₹{selectedProduct.price.toFixed(2)}
           </DefaultText>
           <Text style={styles.textdesc}>{selectedProduct.description}</Text>
           <Text style={styles.textdesc}>

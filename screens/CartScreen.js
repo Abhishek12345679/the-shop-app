@@ -1,29 +1,41 @@
 import React from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity
+} from "react-native";
 import Colors from "../constants/Colors";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import CartItem from "../components/shop/CartItem";
 
-import { useDispatch } from "react-redux";
 import * as cartActions from "../store/actions/cart";
+import * as orderActions from "../store/actions/orders";
+
+import DefaultText from "../components/UI/DefaultText";
 
 const CartScreen = props => {
   const dispatch = useDispatch();
-
   const cartTotalAmt = useSelector(state => state.cart.sum);
+
   const cartItem = useSelector(state => {
     const transformedCartItems = [];
-    for (let key in state.cart.items) {
+
+    // for in loop
+    for (const key in state.cart.items) {
       transformedCartItems.push({
         productId: key,
         productTitle: state.cart.items[key].productTitle,
         productPrice: state.cart.items[key].productPrice,
         quantity: state.cart.items[key].quantity,
-        totalSum: state.cart.items[key].sum,
-        productImageUrl: state.cart.items[key].imageUrl
+        sum: state.cart.items[key].sum,
+        imageUrl: state.cart.items[key].imageUrl
       });
     }
-    return transformedCartItems;
+    return transformedCartItems.sort((a, b) => {
+      a.productId > b.productId ? 1 : -1;
+    });
   });
 
   return (
@@ -34,7 +46,7 @@ const CartScreen = props => {
         </View>
 
         <View style={styles.productPriceContainer}>
-          <Text style={{ color: "#fff" }}>{cartTotalAmt}</Text>
+          <Text style={{ color: "#fff" }}>{cartTotalAmt.toFixed(2)}</Text>
         </View>
       </View>
       <FlatList
@@ -42,11 +54,12 @@ const CartScreen = props => {
         data={cartItem}
         renderItem={itemData => (
           <CartItem
+            isDeleteable
             productTitle={itemData.item.productTitle}
             productPrice={itemData.item.productPrice}
-            productSum={itemData.item.totalSum}
+            productSum={itemData.item.sum}
             quantity={itemData.item.quantity}
-            productImage={itemData.item.productImageUrl}
+            productImage={itemData.item.imageUrl}
             productId={itemData.item.productId}
             onRemove={() => {
               dispatch(cartActions.removeFromCart(itemData.item.productId));
@@ -54,6 +67,17 @@ const CartScreen = props => {
           />
         )}
       />
+      <TouchableOpacity
+        style={{ alignItems: "center" }}
+        disabled={cartItem.length === 0}
+        onPress={() => {
+          dispatch(orderActions.addOrder(cartItem, cartTotalAmt));
+        }}
+      >
+        <View style={styles.submitOrderBtn}>
+          <DefaultText style={styles.submitOrderText}>Submit</DefaultText>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -61,7 +85,6 @@ const CartScreen = props => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    margin: 20,
     padding: 0
   },
   titleText: {
@@ -74,7 +97,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    height: 70
+    height: 70,
+    paddingHorizontal: 20
   },
   productPriceContainer: {
     backgroundColor: Colors.primaryColor,
@@ -93,6 +117,21 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.6,
     elevation: 70,
     shadowRadius: 0
+  },
+  submitOrderBtn: {
+    width: 125,
+    height: 50,
+    padding: 10,
+    backgroundColor: Colors.primaryColor,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10
+  },
+  submitOrderText: {
+    color: "#fff",
+    fontSize: 20,
+    fontFamily: "standard-apple-bold"
   }
 });
 

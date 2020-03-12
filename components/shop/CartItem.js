@@ -1,10 +1,9 @@
 import React from "react";
-import { View, StyleSheet, Image } from "react-native";
+import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import DefaultText from "../UI/DefaultText";
 
 const CartItem = props => {
-
   return (
     <View style={styles.cartItem}>
       <View style={styles.imageDetailContainer}>
@@ -15,24 +14,30 @@ const CartItem = props => {
           </View>
           <View style={styles.rowTwo}>
             <View style={styles.column}>
-              <DefaultText style={styles.text}>₹{props.productSum}</DefaultText>
+              <DefaultText style={styles.text}>
+                ₹{props.productSum.toFixed(2)}
+              </DefaultText>
               <DefaultText style={styles.text}>{props.quantity}</DefaultText>
             </View>
 
-            <View
-              style={{
-                marginStart: 150,
-                alignItems: "center",
-                justifyContent: "center"
-              }}
-            >
-              <Ionicons
-                name="md-trash"
-                size={30}
-                color="red"
-                onPress={props.onRemove}
-              />
-            </View>
+            {props.isDeleteable && (
+              <View
+                style={{
+                  marginStart: 120,
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                <TouchableOpacity>
+                  <Ionicons
+                    name="md-trash"
+                    size={30}
+                    color="red"
+                    onPress={props.onRemove}
+                  />
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         </View>
       </View>
@@ -46,7 +51,6 @@ const styles = StyleSheet.create({
     marginStart: 50
   },
   cartItem: {
-    width: "95%",
     height: 75,
     backgroundColor: "#fff",
     marginVertical: 8,
@@ -61,7 +65,8 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.6,
     elevation: 70,
-    shadowRadius: 10
+    shadowRadius: 10,
+    marginHorizontal: 20
   },
   rowOne: {
     flexDirection: "column"
