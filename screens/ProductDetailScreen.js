@@ -33,8 +33,8 @@ const ProductsDetailScreen = props => {
           />
           <View style={styles.iconContainer}>
             <Icon
-              raised
-              name="ios-heart"
+              reverse
+              name="ios-cart"
               type="ionicon"
               color="green"
               onPress={() => {

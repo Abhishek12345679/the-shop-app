@@ -51,6 +51,7 @@ const CartScreen = props => {
       </View>
       <FlatList
         keyExtractor={item => item.productId}
+        contentContainerStyle={{ flexGrow: 1 }}
         data={cartItem}
         renderItem={itemData => (
           <CartItem

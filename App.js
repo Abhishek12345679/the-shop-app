@@ -6,7 +6,7 @@ import { createStore, combineReducers } from "redux";
 import productsReducer from "./store/reducers/products";
 import ProductsNavigator from "./navigation/ProductsNavigator";
 import cartReducer from "./store/reducers/cart";
-import ordersReducer from './store/reducers/orders'
+import ordersReducer from "./store/reducers/orders";
 
 import { AppLoading } from "expo";
 

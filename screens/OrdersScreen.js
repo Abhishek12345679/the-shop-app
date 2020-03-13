@@ -10,6 +10,7 @@ const OrdersScreen = props => {
   return (
     <FlatList
       data={orders}
+      contentContainerStyle={{flexGrow:1}}
       keyExtractor={item => item.id}
       renderItem={itemData => (
         <OrderItem

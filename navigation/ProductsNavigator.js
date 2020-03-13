@@ -1,28 +1,28 @@
 import { createStackNavigator } from "react-navigation-stack";
-import { createMaterialTopTabNavigator, createBottomTabNavigator } from "react-navigation-tabs";
+import { createMaterialTopTabNavigator } from "react-navigation-tabs";
 
 import ProductsOverviewScreen from "../screens/ProductOverviewScreen";
 import ProductsDetailScreen from "../screens/ProductDetailScreen";
 import CartScreen from "../screens/CartScreen";
 import OrdersScreen from "../screens/OrdersScreen";
+import UserProductsScreen from "../screens/UserProductsScreen";
 
 import Colors from "../constants/Colors";
 import { Platform } from "react-native";
 import { createAppContainer } from "react-navigation";
 
-const defaultStackNavigationOptions = navData => {
-    return {
-        defaultNavigationOptions: {
-            headerStyle: {
-                backgroundColor: Platform.OS === "android" ? Colors.primaryColor : ""
-            },
-            headerTitleStyle: {
-                fontFamily: "russo",
-                fontSize: 17
-            },
-            headerTintColor: Platform.OS === "ios" ? Colors.primaryColor : ""
-        }
-    };
+const defaultStackNavigationOptions = {
+    defaultNavigationOptions: {
+        headerStyle: {
+            backgroundColor: Platform.OS === "android" ? Colors.primaryColor : "white"
+        },
+        headerTitleStyle: {
+            fontFamily: "standard-apple-bold",
+            fontSize: 20
+        },
+        headerTintColor: Platform.OS === "ios" ? Colors.primaryColor : "white",
+        headerBackTitle: 'Back'
+    }
 };
 
 const ProductsNavigator = createStackNavigator({
@@ -33,14 +33,24 @@ const ProductsNavigator = createStackNavigator({
     defaultStackNavigationOptions
 );
 
-const OrdersNaviagtor = createStackNavigator({
-    ordersScreen: {
-        screen: OrdersScreen
+const OrdersNavigator = createStackNavigator({
+        ordersScreen: OrdersScreen
     },
     defaultStackNavigationOptions
-});
+);
 
-const BottomTabNavigator = createMaterialTopTabNavigator({
+const UserProductsNavigator = createStackNavigator({
+        UserProductsScreen: {
+            screen: UserProductsScreen
+        },
+        ProductDetailsScreen: {
+            screen: ProductsDetailScreen
+        }
+    },
+    defaultStackNavigationOptions
+);
+
+const TopTabNavigator = createMaterialTopTabNavigator({
     products: {
         screen: ProductsNavigator,
         navigationOptions: {
@@ -48,11 +58,17 @@ const BottomTabNavigator = createMaterialTopTabNavigator({
         }
     },
     orders: {
-        screen: OrdersNaviagtor,
+        screen: OrdersNavigator,
         navigationOptions: {
             tabBarLabel: "Orders"
+        }
+    },
+    userProducts: {
+        screen: UserProductsNavigator,
+        navigationOptions: {
+            tabBarLabel: " Your Listings"
         }
     }
 });
 
-export default createAppContainer(BottomTabNavigator);
+export default createAppContainer(TopTabNavigator);
