@@ -1,17 +1,12 @@
 import React from "react";
 import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { Icon } from "react-native-elements";
 
 import Card from "../UI/Card";
 
-import { useDispatch } from "react-redux";
-import * as cartActions from "../../store/actions/cart";
-
 const Product = props => {
-  const dispatch = useDispatch();
-
   return (
     <TouchableOpacity
+      {...props}
       onPress={props.onSelectProduct}
       style={styles.listContainer}
       activeOpacity={0.7}
@@ -27,22 +22,7 @@ const Product = props => {
               ₹{props.price.toFixed(2)}
             </Text>
           </View>
-          <View styles={styles.addToCartIcon}>
-            <TouchableOpacity
-              onPress={() => {
-                dispatch(cartActions.addToCart(props.item));
-              }}
-            >
-              <Icon
-                reverse
-                name="ios-cart"
-                type="ionicon"
-                size={18}
-                containerStyle={{ marginBottom: 5 }}
-                color="green"
-              />
-            </TouchableOpacity>
-          </View>
+          {props.children}
         </View>
       </Card>
     </TouchableOpacity>

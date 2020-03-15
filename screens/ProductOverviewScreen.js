@@ -1,15 +1,24 @@
 import React from "react";
-import { FlatList, View, StyleSheet, Platform } from "react-native";
-import { useSelector } from "react-redux";
+import {
+  FlatList,
+  View,
+  StyleSheet,
+  Platform,
+  TouchableOpacity
+} from "react-native";
+import { useSelector, useDispatch } from "react-redux";
 import { StatusBar } from "react-native";
+import { Icon } from "react-native-elements";
 
 import Product from "../components/shop/Product";
+import * as cartActions from "../store/actions/cart";
 
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../components/UI/HeaderButton";
 
 const ProductOverviewScreen = props => {
   const availableProducts = useSelector(state => state.products.products);
+  const dispatch = useDispatch();
 
   const renderProductItem = itemData => {
     const selectProductHandler = () => {
@@ -30,7 +39,24 @@ const ProductOverviewScreen = props => {
         onSelectProduct={selectProductHandler}
         productId={itemData.item.id}
         item={itemData.item}
-      />
+      >
+        <View>
+          <TouchableOpacity
+            onPress={() => {
+              dispatch(cartActions.addToCart(itemData.item));
+            }}
+          >
+            <Icon
+              reverse
+              name="ios-cart"
+              type="ionicon"
+              size={18}
+              containerStyle={{ marginBottom: 5 }}
+              color="green"
+            />
+          </TouchableOpacity>
+        </View>
+      </Product>
     );
   };
 

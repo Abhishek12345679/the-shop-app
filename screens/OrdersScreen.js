@@ -7,10 +7,18 @@ import OrderItem from "../components/shop/OrderItem";
 const OrdersScreen = props => {
   const orders = useSelector(state => state.orders.orders);
 
+  if (orders.length === 0) {
+    return (
+      <View style={styles.screen}>
+        <Text style={{fontFamily:'standard-apple'}}>Unfold my bag here 🛍</Text>
+      </View>
+    );
+  }
+
   return (
     <FlatList
       data={orders}
-      contentContainerStyle={{flexGrow:1}}
+      contentContainerStyle={{ flexGrow: 1 }}
       keyExtractor={item => item.id}
       renderItem={itemData => (
         <OrderItem
@@ -24,7 +32,13 @@ const OrdersScreen = props => {
 };
 
 const styles = StyleSheet.create({
-  orderItem: {}
+  orderItem: {},
+  screen: {
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    flex:1
+  }
 });
 
 OrdersScreen.navigationOptions = {

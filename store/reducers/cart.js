@@ -1,6 +1,7 @@
 import { ADD_TO_CART, REMOVE_FROM_CART } from "../actions/cart";
 import cartItem from "../../models/cart-item";
 import { ADD_ORDER } from "../actions/orders";
+import { DELETE_USER_PRODUCT } from "../actions/product";
 
 const initialState = {
   items: {},
@@ -19,13 +20,13 @@ const cartReducer = (state = initialState, action) => {
       let newOrUpdatedCartItem;
 
       /* addedproduct, since it gets itemData.item ,
-            therefore addedProduct.id is nothing but itemData.item.id */
+                  therefore addedProduct.id is nothing but itemData.item.id */
       if (state.items[addedProduct.id]) {
         //this is how you normally instantiate an object in oop
         newOrUpdatedCartItem = new cartItem(
           /* obj['property_name'] = 'some_value';
-            This is how to dynamically add properties(like arrays,etc) to an object in 
-            Vanilla JS*/
+                      This is how to dynamically add properties(like arrays,etc) to an object in 
+                      Vanilla JS*/
           state.items[addedProduct.id].quantity + 1,
           productTitle,
           productPrice,
@@ -83,6 +84,21 @@ const cartReducer = (state = initialState, action) => {
 
     case ADD_ORDER:
       return initialState;
+
+    case DELETE_USER_PRODUCT:
+      if (!state.items[action.ownerId]) {
+        return state;
+      }
+
+      const updatedItems = { ...state.items };
+      const itemTotal = state.items[action.ownerId].sum;
+      delete updatedItems[action.ownerId];
+
+      return {
+        ...state,
+        items: updatedItems,
+        sum: state.sum - itemTotal
+      };
 
     default:
       return state;
