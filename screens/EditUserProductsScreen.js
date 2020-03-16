@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { StyleSheet, Text, View, Button, TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { Icon } from "react-native-elements";
+import Colors from "../constants/Colors";
+import { TouchableOpacity } from "react-native-gesture-handler";
+
+import * as productActions from "../store/actions/product";
 
 const EditUserProductsScreen = props => {
   const [arrowPressed, setArrowPressed] = useState(false);
+
+  const dispatch = useDispatch();
 
   const availableProducts = useSelector(state => state.products.userProducts);
   const selectedProductId = props.navigation.getParam("productId");
@@ -16,6 +23,12 @@ const EditUserProductsScreen = props => {
   const [price, setPrice] = useState(selectedProduct.price);
   const [description, setDescription] = useState(selectedProduct.description);
   const [imageUrl, setImageUrl] = useState(selectedProduct.imageUrl);
+
+  const editProductsHandler = useCallback(() => {
+    dispatch(
+      productActions.updateProduct(title, description, imageUrl, +price)
+    );
+  }, [dispatch, title, description, imageUrl, price]);
 
   return (
     <View
@@ -61,22 +74,48 @@ const EditUserProductsScreen = props => {
           padding: 20
         }}
       >
-        <View styles={styles.form}>
-          <View styles={styles.formItem}>
-            <Text style={styles.formText}>Title</Text>
-            <TextInput value={title} onChange={newVal => newVal} />
+        <View style={styles.form}>
+          <View style={styles.headerItem}>
+            <View>
+              <Text style={styles.headerText}>Edit</Text>
+            </View>
+            <TouchableOpacity onPress={editProductsHandler}>
+              <Icon
+                reverse
+                name="ios-save"
+                type="ionicon"
+                size={25}
+                color={Colors.primaryColor}
+              />
+            </TouchableOpacity>
           </View>
-          <View styles={styles.formItem}>
+          <View style={styles.formItem}>
             <Text style={styles.formText}>Title</Text>
-            <TextInput value={price} onChange={newVal => newVal} />
+            <TextInput
+              style={styles.inputfield}
+              value={title}
+              onChangeText={newVal => setTitle(newVal)}
+            />
           </View>
-          <View styles={styles.formItem}>
-            <Text style={styles.formText}>Title</Text>
-            <TextInput value={imageUrl} onChange={newVal => newVal} />
+          <View style={styles.formItem}>
+            <Text style={styles.formText}>Price</Text>
+            <TextInput style={styles.inputfield} value={price.toString()} />
           </View>
-          <View styles={styles.formItem}>
-            <Text style={styles.formText}>Title</Text>
-            <TextInput value={description} onChange={newVal => newVal} Î />
+          <View style={styles.formItem}>
+            <Text style={styles.formText}>Image Url</Text>
+            <TextInput
+              style={styles.inputfield}
+              value={imageUrl}
+              onChangeText={newVal => setImageUrl(newVal)}
+            />
+          </View>
+          <View style={styles.formItem}>
+            <Text style={styles.formText}>Description</Text>
+            <TextInput
+              style={styles.inputfield}
+              onChangeText={newVal => setDescription(newVal)}
+              value={description}
+            />
           </View>
         </View>
       </View>
@@ -85,16 +124,32 @@ const EditUserProductsScreen = props => {
 };
 
 const styles = StyleSheet.create({
-  modal: {
-    marginTop: 100
+  form: {
+    flexDirection: "column"
   },
-  modalSampleText: {
-    fontFamily: "standard-apple",
-    fontSize: 15
+  formItem: {
+    height: 100,
+    marginVertical: 10
   },
-  form: {},
-  formItem: {},
-  formText: {}
+  formText: {
+    fontFamily: "standard-apple-bold",
+    fontSize: 20
+  },
+  headerText: {
+    fontFamily: "standard-apple-bold",
+    fontSize: 50
+  },
+  inputfield: {
+    borderBottomWidth: 1,
+    borderColor: "#000",
+    height: 25
+  },
+  headerItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10
+  }
 });
 
 export default EditUserProductsScreen;

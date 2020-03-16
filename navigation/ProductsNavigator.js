@@ -42,11 +42,14 @@ const OrdersNavigator = createStackNavigator(
   defaultStackNavigationOptions
 );
 
-const UserProductsNavigator = createStackNavigator({
-  UserProductsScreen: {
-    screen: UserProductsScreen
-  }
-});
+const UserProductsNavigator = createStackNavigator(
+  {
+    UserProductsScreen: {
+      screen: UserProductsScreen
+    }
+  },
+  defaultStackNavigationOptions
+);
 
 const UserProductsModalNavigator = createStackNavigator(
   {
@@ -56,21 +59,23 @@ const UserProductsModalNavigator = createStackNavigator(
     Modal: {
       screen: EditUserProductsScreen,
       navigationOptions: {
-        // gestureResponseDistance: { vertical: 1000 }
+        // gestureResponseDistance: { vertical: 1000 },
       }
     }
   },
   {
     mode: "modal", // Remember to set the root navigator to display modally.
-    headerMode: "none", // This ensures we don't get two top bars.
-    navigationOptions: {
-      cardStyle: {
-        opacity: 1
-      }
-    },
+    headerMode: "none", // This ensures we don't get two top bars.,
     transparentCard: true,
-    defaultStackNavigationOptions
-  }
+    defaultNavigationOptions: {
+      navigationOptions: {
+        cardStyle: {
+          backgroundColor: "transparent"
+        }
+      }
+    }
+  },
+  defaultStackNavigationOptions
 );
 
 const TopTabNavigator = createMaterialTopTabNavigator({
