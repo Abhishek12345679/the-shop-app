@@ -1,5 +1,9 @@
 import { PRODUCTS } from "../../data/dummy_data";
-import { DELETE_USER_PRODUCT, UPDATE_PRODUCT } from "../actions/product";
+import {
+  DELETE_USER_PRODUCT,
+  UPDATE_PRODUCT,
+  CREATE_PRODUCT
+} from "../actions/product";
 import Product from "../../models/product";
 
 const initialState = {
@@ -12,14 +16,14 @@ const initialState = {
 const productsReducer = (state = initialState, action) => {
   switch (action.type) {
     case DELETE_USER_PRODUCT:
-      const selectedUserProduct = state.userProducts.find(
+      const selectedUserProduct = state.userProducts.findIndex(
         userProduct => userProduct.id === action.ownerId
       );
       const updatedList = [...state.userProducts];
       updatedList.splice(selectedUserProduct, 1);
 
-      const selectedProduct = state.products.find(
-        product => product.id === action.id
+      const selectedProduct = state.products.findIndex(
+        product => product.id === action.ownerId
       );
       const updatedUserProductList = [...state.userProducts];
       const updatedProductList = [...state.products];
@@ -32,24 +36,43 @@ const productsReducer = (state = initialState, action) => {
       };
 
     case UPDATE_PRODUCT:
-      const updatedProductsList = [...state.products];
-      const productIndex = updatedProductsList.findIndex(
-        prod => prod.id === action.id
+      const productIndex = state.userProducts.findIndex(
+        prod => prod.id === action.pid
       );
-      const updatedProduct = Product(
-        new Date().toString,
-        state.products[productIndex].ownerId,
-        action.imageUrl,
-        action.title,
-        action.description,
-        action.price
+      const updatedProduct = new Product(
+        action.pid,
+        state.userProducts[productIndex].ownerId,
+        action.productData.title,
+        action.productData.imageUrl,
+        action.productData.description,
+        state.userProducts[productIndex].price
       );
-
-      updatedProductsList[productIndex] = updatedProduct;
+      const updatedUserProducts = [...state.userProducts];
+      updatedUserProducts[productIndex] = updatedProduct;
+      const availableProductIndex = state.products.findIndex(
+        prod => prod.id === action.pid
+      );
+      const updatedAvailableProducts = [...state.products];
+      updatedAvailableProducts[availableProductIndex] = updatedProduct;
+      return {
+        ...state,
+        products: updatedAvailableProducts,
+        userProducts: updatedUserProducts
+      };
+    case CREATE_PRODUCT:
+      const newProduct = new Product(
+        new Date().toString(),
+        'u1',
+        action.productData.title,
+        action.productData.imageUrl,
+        action.productData.description,
+        action.productData.price
+      );
 
       return {
         ...state,
-        products: updatedProductList
+        products: state.products.concat(newProduct),
+        userProducts: state.userProducts.concat(newProduct)
       };
     default:
       return state;

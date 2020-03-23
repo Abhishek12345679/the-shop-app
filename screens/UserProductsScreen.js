@@ -1,13 +1,8 @@
-import React, { useState } from "react";
-import {
-  View,
-  FlatList,
-  TouchableOpacity,
-  Modal,
-  StyleSheet,
-  Dimensions
-} from "react-native";
+import React from "react";
+import { View, FlatList, TouchableOpacity } from "react-native";
 import { Icon } from "react-native-elements";
+import { HeaderButtons, Item } from "react-navigation-header-buttons";
+import HeaderButton from "../components/UI/HeaderButton";
 
 import * as productActions from "../store/actions/product";
 
@@ -19,12 +14,9 @@ const UserProductsScreen = props => {
 
   const dispatch = useDispatch();
 
-  const [buttonPressed, setButtonPressed] = useState(false);
-
   const renderUserProductItem = itemData => {
     return (
       <Product
-        longPressDelay={2000}
         image={itemData.item.imageUrl}
         title={itemData.item.title}
         price={itemData.item.price}
@@ -36,7 +28,6 @@ const UserProductsScreen = props => {
               productId: itemData.item.id
             }
           });
-          setButtonPressed(prevState => prevState);
         }}
       >
         <TouchableOpacity
@@ -63,35 +54,29 @@ const UserProductsScreen = props => {
         keyExtractor={item => item.id}
         data={userProducts}
         renderItem={renderUserProductItem}
-        contentContainerStyle={{ marginHorizontal: 10 }}
+        contentContainerStyle={{ marginHorizontal: 10, flexGrow: 1 }}
       />
-      {buttonPressed && (
-        <View style={styles.MainContainer}>
-          <View
-            style={{
-              width: Dimensions.get("window").width,
-              height: Dimensions.get("window").height,
-              backgroundColor: "#000",
-              opacity: 0.7,
-              marginBottom: 200
-            }}
-          />
-        </View>
-      )}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  MainContainer: {
-    justifyContent: "center",
-    alignItems: "stretch",
-    flex: 1
-  }
-});
-
-UserProductsScreen.navigationOptions = {
-  headerTitle: "Your Listings"
+UserProductsScreen.navigationOptions = navData => {
+  return {
+    headerTitle: "Your Listings",
+    headerRight: () => (
+      <HeaderButtons HeaderButtonComponent={HeaderButton}>
+        <Item
+          title="add"
+          iconName={Platform.OS === "ios" ? "ios-add" : "md-add"}
+          onPress={() => {
+            navData.navigation.navigate({
+              routeName: "Modal"
+            });
+          }}
+        />
+      </HeaderButtons>
+    )
+  };
 };
 
 export default UserProductsScreen;

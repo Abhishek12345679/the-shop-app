@@ -1,12 +1,19 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { StyleSheet, Text, View, Button, TextInput } from "react-native";
+import React, { useState, useCallback, useReducer } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  ScrollView,
+  TouchableOpacity
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { Icon } from "react-native-elements";
 import Colors from "../constants/Colors";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 import * as productActions from "../store/actions/product";
+import { Alert } from "react-native";
 
 const EditUserProductsScreen = props => {
   const [arrowPressed, setArrowPressed] = useState(false);
@@ -19,16 +26,61 @@ const EditUserProductsScreen = props => {
     prod => prod.id === selectedProductId
   );
 
-  const [title, setTitle] = useState(selectedProduct.title);
-  const [price, setPrice] = useState(selectedProduct.price);
-  const [description, setDescription] = useState(selectedProduct.description);
-  const [imageUrl, setImageUrl] = useState(selectedProduct.imageUrl);
+  const addMode = !selectedProduct;
 
-  const editProductsHandler = useCallback(() => {
-    dispatch(
-      productActions.updateProduct(title, description, imageUrl, +price)
-    );
-  }, [dispatch, title, description, imageUrl, price]);
+  const [title, setTitle] = useState(addMode ? "" : selectedProduct.title);
+  const [titleIsValid, setTitleIsValid] = useState(false);
+  const [price, setPrice] = useState(addMode ? "" : selectedProduct.price);
+  const [description, setDescription] = useState(
+    addMode ? "" : selectedProduct.description
+  );
+  const [imageUrl, setImageUrl] = useState(
+    addMode ? "" : selectedProduct.imageUrl
+  );
+
+  const editorAddProductsHandler = useCallback(() => {
+    if (!titleIsValid) {
+      Alert.alert("Invalid Input", "Please do not leave the fields blank", [
+        { text: "close" }
+      ]);
+      return;
+    }
+    if (addMode) {
+      dispatch(
+        productActions.createProduct(title, imageUrl, description, +price)
+      );
+    } else {
+      dispatch(
+        productActions.updateProduct(
+          selectedProductId,
+          title,
+          imageUrl,
+          description,
+          +price
+        )
+      );
+    }
+
+    props.navigation.navigate("UserProductsScreen");
+  }, [
+    dispatch,
+    selectedProductId,
+    title,
+    imageUrl,
+    description,
+    price,
+    titleIsValid
+  ]);
+
+  const titleChangeHandler = title => {
+    if (title.trim().length === 0) {
+      setTitleIsValid(false);
+    } else {
+      setTitleIsValid(true);
+    }
+
+    setTitle(title);
+  };
 
   return (
     <View
@@ -79,7 +131,7 @@ const EditUserProductsScreen = props => {
             <View>
               <Text style={styles.headerText}>Edit</Text>
             </View>
-            <TouchableOpacity onPress={editProductsHandler}>
+            <TouchableOpacity onPress={editorAddProductsHandler}>
               <Icon
                 reverse
                 name="ios-save"
@@ -89,34 +141,57 @@ const EditUserProductsScreen = props => {
               />
             </TouchableOpacity>
           </View>
-          <View style={styles.formItem}>
-            <Text style={styles.formText}>Title</Text>
-            <TextInput
-              style={styles.inputfield}
-              value={title}
-              onChangeText={newVal => setTitle(newVal)}
-            />
-          </View>
-          <View style={styles.formItem}>
-            <Text style={styles.formText}>Price</Text>
-            <TextInput style={styles.inputfield} value={price.toString()} />
-          </View>
-          <View style={styles.formItem}>
-            <Text style={styles.formText}>Image Url</Text>
-            <TextInput
-              style={styles.inputfield}
-              value={imageUrl}
-              onChangeText={newVal => setImageUrl(newVal)}
-            />
-          </View>
-          <View style={styles.formItem}>
-            <Text style={styles.formText}>Description</Text>
-            <TextInput
-              style={styles.inputfield}
-              onChangeText={newVal => setDescription(newVal)}
-              value={description}
-            />
-          </View>
+          <ScrollView>
+            <View>
+              <View style={styles.formItem}>
+                <Text style={styles.formText}>Title</Text>
+                <TextInput
+                  style={styles.inputfield}
+                  value={title}
+                  onChangeText={titleChangeHandler}
+                  keyboardType="default"
+                  autoCapitalize="sentences"
+                  autoCorrect
+                  returnKeyType="done"
+                />
+              </View>
+              {!titleIsValid && addMode && (
+                <Text style={{ color: "red", fontWeight: "bold" }}>
+                  Invalid
+                </Text>
+              )}
+              {addMode && (
+                <View style={styles.formItem}>
+                  <Text style={styles.formText}>Price</Text>
+                  <TextInput
+                    style={styles.inputfield}
+                    value={price.toString()}
+                    onChangeText={newVal => setPrice(newVal)}
+                    keyboardType="decimal-pad"
+                  />
+                </View>
+              )}
+              <View style={styles.formItem}>
+                <Text style={styles.formText}>Image Url</Text>
+                <TextInput
+                  style={styles.inputfield}
+                  value={imageUrl}
+                  onChangeText={newVal => setImageUrl(newVal)}
+                  keyboardType="default"
+                />
+              </View>
+              <View style={styles.formItem}>
+                <Text style={styles.formText}>Description</Text>
+                <TextInput
+                  style={styles.inputfield}
+                  onChangeText={newVal => setDescription(newVal)}
+                  value={description}
+                  keyboardType="default"
+                  multiline
+                />
+              </View>
+            </View>
+          </ScrollView>
         </View>
       </View>
     </View>
@@ -128,21 +203,22 @@ const styles = StyleSheet.create({
     flexDirection: "column"
   },
   formItem: {
-    height: 100,
     marginVertical: 10
   },
   formText: {
     fontFamily: "standard-apple-bold",
-    fontSize: 20
+    fontSize: 15,
+    color: Colors.primaryColor
   },
   headerText: {
     fontFamily: "standard-apple-bold",
     fontSize: 50
   },
   inputfield: {
-    borderBottomWidth: 1,
-    borderColor: "#000",
-    height: 25
+    borderBottomWidth: 2,
+    borderColor: Colors.primaryColor,
+    height: 25,
+    color: "#ccc"
   },
   headerItem: {
     flexDirection: "row",

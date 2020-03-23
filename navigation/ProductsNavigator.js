@@ -15,7 +15,15 @@ import { createAppContainer } from "react-navigation";
 const defaultStackNavigationOptions = {
   defaultNavigationOptions: {
     headerStyle: {
-      backgroundColor: Platform.OS === "android" ? Colors.primaryColor : "white"
+      backgroundColor:
+        Platform.OS === "android" ? Colors.primaryColor : "white",
+      shadowColor: "transparent",
+      shadowOpacity: 0,
+      shadowOffset: {
+        height: 0,
+        width: 0
+      },
+      shadowRadius: 0
     },
     headerTitleStyle: {
       fontFamily: "standard-apple-bold",
@@ -26,12 +34,26 @@ const defaultStackNavigationOptions = {
   }
 };
 
+const defaultBottomTabNavigationOptions = {
+  defaultNavigationOptions: {
+    tabBarOptions: {
+      activeTintColor: Colors.accentColor,
+      labelStyle: { fontSize: 12 },
+      style: { backgroundColor: "#044F67" },
+      inactiveTintColor: "#fff"
+    }
+  }
+};
+
 const ProductsNavigator = createStackNavigator(
   {
     products_overview: ProductsOverviewScreen,
     productsDetail: ProductsDetailScreen,
     cartScreen: CartScreen
   },
+  // {
+  //   headerMode: "none"
+  // },
   defaultStackNavigationOptions
 );
 
@@ -39,6 +61,9 @@ const OrdersNavigator = createStackNavigator(
   {
     ordersScreen: OrdersScreen
   },
+  // {
+  //   headerMode: "none"
+  // },
   defaultStackNavigationOptions
 );
 
@@ -48,6 +73,9 @@ const UserProductsNavigator = createStackNavigator(
       screen: UserProductsScreen
     }
   },
+  // {
+  //   headerMode: "none"
+  // },
   defaultStackNavigationOptions
 );
 
@@ -57,10 +85,7 @@ const UserProductsModalNavigator = createStackNavigator(
       screen: UserProductsNavigator
     },
     Modal: {
-      screen: EditUserProductsScreen,
-      navigationOptions: {
-        // gestureResponseDistance: { vertical: 1000 },
-      }
+      screen: EditUserProductsScreen
     }
   },
   {
@@ -78,25 +103,41 @@ const UserProductsModalNavigator = createStackNavigator(
   defaultStackNavigationOptions
 );
 
-const TopTabNavigator = createMaterialTopTabNavigator({
-  products: {
-    screen: ProductsNavigator,
-    navigationOptions: {
-      tabBarLabel: "Products"
+const TopTabNavigator = createMaterialTopTabNavigator(
+  {
+    products: {
+      screen: ProductsNavigator,
+      navigationOptions: {
+        tabBarLabel: "Products"
+      }
+    },
+    orders: {
+      screen: OrdersNavigator,
+      navigationOptions: {
+        tabBarLabel: "Orders"
+      }
+    },
+    userProducts: {
+      screen: UserProductsModalNavigator,
+      navigationOptions: {
+        tabBarLabel: " Your Listings"
+      }
     }
   },
-  orders: {
-    screen: OrdersNavigator,
+  defaultBottomTabNavigationOptions
+);
+
+const MainNavigator = createStackNavigator({
+  Main: {
+    screen: TopTabNavigator,
     navigationOptions: {
-      tabBarLabel: "Orders"
-    }
-  },
-  userProducts: {
-    screen: UserProductsModalNavigator,
-    navigationOptions: {
-      tabBarLabel: " Your Listings"
+      headerTitle: "ShopShopInc",
+      headerStyle: {
+        backgroundColor: "#044F67"
+      },
+      headerTintColor: "#fff"
     }
   }
 });
 
-export default createAppContainer(TopTabNavigator);
+export default createAppContainer(MainNavigator);
