@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import * as Font from "expo-font";
 import { Provider } from "react-redux";
-import { createStore, combineReducers } from "redux";
+import { createStore, combineReducers, applyMiddleware } from "redux";
+import ReduxThunk from "redux-thunk";
 
 import productsReducer from "./store/reducers/products";
 import ProductsNavigator from "./navigation/ProductsNavigator";
@@ -17,13 +18,12 @@ export default function App() {
     orders: ordersReducer
   });
 
-  const store = createStore(rootReducer);
+  const store = createStore(rootReducer, applyMiddleware(ReduxThunk));
 
   const [dataLoaded, setDataLoaded] = useState(false);
 
   const fetchFonts = () => {
     Font.loadAsync({
-      russo: require("./assets/fonts/RussoOne-Regular.ttf"),
       "source-code": require("./assets/fonts/SourceCodePro-Regular.ttf"),
       "source-code-bold": require("./assets/fonts/SourceCodePro-Bold.ttf"),
       "standard-apple": require("./assets/fonts/SF-Pro-Text-Regular.ttf"),

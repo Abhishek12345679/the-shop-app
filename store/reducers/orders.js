@@ -1,5 +1,5 @@
 import { ADD_ORDER } from "../actions/orders";
-import order from '../../models/order'
+import order from "../../models/order";
 
 const initialState = {
   orders: []
@@ -9,10 +9,10 @@ export const ordersReducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_ORDER:
       const newOrder = new order(
-        new Date().toString(),
+        action.orderData.id,
         action.orderData.items,
         action.orderData.amount,
-        new Date()
+        action.orderData.date
       );
 
       return {
@@ -24,4 +24,4 @@ export const ordersReducer = (state = initialState, action) => {
   }
 };
 
-export default ordersReducer
+export default ordersReducer;

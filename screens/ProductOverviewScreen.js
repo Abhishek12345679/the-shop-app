@@ -1,24 +1,62 @@
-import React from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   FlatList,
   View,
+  Text,
   StyleSheet,
   Platform,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator,
+  Button,
+  StatusBar
 } from "react-native";
+import { Snackbar } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
-import { StatusBar } from "react-native";
 import { Icon } from "react-native-elements";
 
 import Product from "../components/shop/Product";
 import * as cartActions from "../store/actions/cart";
+import * as productActions from "../store/actions/product";
 
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../components/UI/HeaderButton";
+import Colors from "../constants/Colors";
 
 const ProductOverviewScreen = props => {
   const availableProducts = useSelector(state => state.products.products);
   const dispatch = useDispatch();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
+  const [isVisible, setIsVisible] = useState(false);
+
+  const loadProducts = useCallback(async () => {
+    console.log("LOAD");
+
+    setError(null);
+    setIsLoading(true);
+    try {
+      await dispatch(productActions.fetchProducts());
+    } catch (err) {
+      setError(err.message);
+    }
+    setIsLoading(false);
+  }, [setIsLoading, setError, dispatch]);
+
+  useEffect(() => {
+    const willFocusSub = props.navigation.addListener(
+      "willFocus",
+      loadProducts
+    );
+
+    return () => {
+      willFocusSub.remove();
+    };
+  }, [loadProducts]);
+
+  useEffect(() => {
+    loadProducts();
+  }, [dispatch, loadProducts]);
 
   const renderProductItem = itemData => {
     const selectProductHandler = () => {
@@ -32,43 +70,84 @@ const ProductOverviewScreen = props => {
     };
 
     return (
-      <Product
-        image={itemData.item.imageUrl}
-        title={itemData.item.title}
-        price={itemData.item.price}
-        onSelectProduct={selectProductHandler}
-        productId={itemData.item.id}
-        item={itemData.item}
-      >
-        <View>
-          <TouchableOpacity
-            onPress={() => {
-              dispatch(cartActions.addToCart(itemData.item));
-            }}
-          >
-            <Icon
-              reverse
-              name="ios-cart"
-              type="ionicon"
-              size={18}
-              containerStyle={{ marginBottom: 5 }}
-              color="green"
-            />
-          </TouchableOpacity>
-        </View>
-      </Product>
+      <View style={{marginHorizontal:10}}>
+        <Product
+          image={itemData.item.imageUrl}
+          title={itemData.item.title}
+          price={itemData.item.price}
+          onSelectProduct={selectProductHandler}
+          productId={itemData.item.id}
+          item={itemData.item}
+        >
+          <View>
+            <TouchableOpacity
+              onPress={() => {
+                dispatch(cartActions.addToCart(itemData.item));
+                setIsVisible(true);
+              }}
+            >
+              <Icon
+                reverse
+                name="ios-cart"
+                type="ionicon"
+                size={18}
+                containerStyle={{ marginBottom: 5 }}
+                color="green"
+              />
+            </TouchableOpacity>
+          </View>
+        </Product>
+      </View>
     );
   };
 
+  if (error) {
+    return (
+      <View style={styles.centered}>
+        <View style={styles.errText}>
+          <Text>{error}</Text>
+        </View>
+        <Button title="reload" onPress={loadProducts} />
+      </View>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={Colors.primaryColor} />
+      </View>
+    );
+  }
+
+  if (!isLoading && availableProducts.length === 0) {
+    return (
+      <View style={styles.centered}>
+        <Text>The Bag is Empty 🎒</Text>
+      </View>
+    );
+  }
   return (
-    <View style={styles.screen}>
-      <StatusBar backgroundColor="black" barStyle="dark-content" />
+    <View style={{ flex: 1 }}>
+      <StatusBar backgroundColor="light" barStyle="light-content" />
       <FlatList
         key={availableProducts.id}
         data={availableProducts}
         renderItem={renderProductItem}
-        contentContainerStyle={{ marginHorizontal: 10 }}
+        contentContainerStyle={{ flexGrow: 1 }}
       />
+      <Snackbar
+        visible={isVisible}
+        onDismiss={() => setIsVisible(false)}
+        duration={2000}
+        action={{
+          label: "UNDO",
+          onPress: () => {}
+        }}
+        style={{ backgroundColor: Colors.primaryColor, height: 50 }}
+      >
+        Added to cart 🎒
+      </Snackbar>
     </View>
   );
 };
@@ -91,9 +170,14 @@ ProductOverviewScreen.navigationOptions = navData => {
 };
 
 const styles = StyleSheet.create({
-  screen: {
-    padding: 0,
-    marginHorizontal: 0
+  centered: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1
+  },
+  errText: {
+    color: Colors.primaryColor,
+    fontWeight: "bold"
   }
 });
 

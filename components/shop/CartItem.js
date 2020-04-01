@@ -5,7 +5,7 @@ import DefaultText from "../UI/DefaultText";
 
 const CartItem = props => {
   return (
-    <View style={styles.cartItem}>
+    <View {...props} style={{ ...styles.cartItem, ...props.style }}>
       <View style={styles.imageDetailContainer}>
         <Image source={{ uri: props.productImage }} style={styles.image} />
         <View style={styles.prodDetail}>

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, FlatList, Image } from "react-native";
+import { View, Text, StyleSheet, FlatList } from "react-native";
 
 import { useSelector } from "react-redux";
 import OrderItem from "../components/shop/OrderItem";
@@ -10,7 +10,9 @@ const OrdersScreen = props => {
   if (orders.length === 0) {
     return (
       <View style={styles.screen}>
-        <Text style={{fontFamily:'standard-apple'}}>Unfold my bag here 🛍</Text>
+        <Text style={{ fontFamily: "standard-apple" }}>
+          Unfold my bag here 🛍
+        </Text>
       </View>
     );
   }
@@ -37,7 +39,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 10,
-    flex:1
+    flex: 1
   }
 });
 

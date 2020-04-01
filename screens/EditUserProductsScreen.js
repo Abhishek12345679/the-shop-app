@@ -3,9 +3,10 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  ActivityIndicator
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
@@ -13,10 +14,42 @@ import { Icon } from "react-native-elements";
 import Colors from "../constants/Colors";
 
 import * as productActions from "../store/actions/product";
+import Input from "../components/UI/Input";
 import { Alert } from "react-native";
+
+const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
+
+const formInputReducer = (state, action) => {
+  if (action.type === FORM_INPUT_UPDATE) {
+    const updatedInputState = {
+      ...state.inputState,
+      [action.inputId]: action.value
+    };
+    const updatedValidities = {
+      ...state.inputValidities,
+      [action.inputId]: action.isValid
+    };
+    let fromIsValid = true;
+
+    for (const key in updatedValidities) {
+      fromIsValid = fromIsValid && updatedValidities[key];
+    }
+
+    return {
+      inputState: updatedInputState,
+      inputValidities: updatedValidities,
+      formValidity: fromIsValid
+    };
+  }
+  return state;
+};
 
 const EditUserProductsScreen = props => {
   const [arrowPressed, setArrowPressed] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [error, setError] = useState();
 
   const dispatch = useDispatch();
 
@@ -28,59 +61,74 @@ const EditUserProductsScreen = props => {
 
   const addMode = !selectedProduct;
 
-  const [title, setTitle] = useState(addMode ? "" : selectedProduct.title);
-  const [titleIsValid, setTitleIsValid] = useState(false);
-  const [price, setPrice] = useState(addMode ? "" : selectedProduct.price);
-  const [description, setDescription] = useState(
-    addMode ? "" : selectedProduct.description
-  );
-  const [imageUrl, setImageUrl] = useState(
-    addMode ? "" : selectedProduct.imageUrl
+  const [inputFormState, dispatchInputFormState] = useReducer(
+    formInputReducer,
+    {
+      inputState: {
+        title: addMode ? "" : selectedProduct.title,
+        imageUrl: addMode ? "" : selectedProduct.imageUrl,
+        description: addMode ? "" : selectedProduct.description,
+        price: ""
+      },
+      inputValidities: {
+        title: addMode ? false : true,
+        imageUrl: addMode ? false : true,
+        description: addMode ? false : true,
+        price: addMode ? false : true
+      },
+      formValidity: addMode ? false : true
+    }
   );
 
-  const editorAddProductsHandler = useCallback(() => {
-    if (!titleIsValid) {
+  const editorAddProductsHandler = useCallback(async () => {
+    if (!inputFormState.formValidity) {
       Alert.alert("Invalid Input", "Please do not leave the fields blank", [
         { text: "close" }
       ]);
       return;
     }
-    if (addMode) {
-      dispatch(
-        productActions.createProduct(title, imageUrl, description, +price)
-      );
-    } else {
-      dispatch(
-        productActions.updateProduct(
-          selectedProductId,
-          title,
-          imageUrl,
-          description,
-          +price
-        )
-      );
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      if (addMode) {
+        await dispatch(
+          productActions.createProduct(
+            inputFormState.inputState.title,
+            inputFormState.inputState.imageUrl,
+            inputFormState.inputState.description,
+            +inputFormState.inputState.price
+          )
+        );
+      } else {
+        await dispatch(
+          productActions.updateProduct(
+            selectedProductId,
+            inputFormState.inputState.title,
+            inputFormState.inputState.imageUrl,
+            inputFormState.inputState.description,
+            +inputFormState.inputState.price
+          )
+        );
+      }
+      props.navigation.navigate("UserProductsScreen");
+    } catch (err) {
+      setError(err.message);
     }
+  }, [dispatch, selectedProductId, inputFormState]);
 
-    props.navigation.navigate("UserProductsScreen");
-  }, [
-    dispatch,
-    selectedProductId,
-    title,
-    imageUrl,
-    description,
-    price,
-    titleIsValid
-  ]);
-
-  const titleChangeHandler = title => {
-    if (title.trim().length === 0) {
-      setTitleIsValid(false);
-    } else {
-      setTitleIsValid(true);
-    }
-
-    setTitle(title);
-  };
+  const inputValueChangeHandler = useCallback(
+    (inputIdentifier, inputValue, inputValidity) => {
+      dispatchInputFormState({
+        type: FORM_INPUT_UPDATE,
+        value: inputValue,
+        isValid: inputValidity,
+        inputId: inputIdentifier
+      });
+    },
+    [dispatchInputFormState]
+  );
 
   return (
     <View
@@ -91,7 +139,7 @@ const EditUserProductsScreen = props => {
           <Ionicons
             name="ios-arrow-down"
             size={50}
-            color="black"
+            color="white"
             onPress={() => {
               setArrowPressed(prevState => !prevState);
               props.navigation.navigate("UserProductsScreen");
@@ -101,7 +149,7 @@ const EditUserProductsScreen = props => {
           <Ionicons
             name="ios-arrow-up"
             size={50}
-            color="black"
+            color="white"
             onPress={() => {
               setArrowPressed(prevState => !prevState);
               props.navigation.navigate("UserProductsScreen");
@@ -111,7 +159,7 @@ const EditUserProductsScreen = props => {
       </View>
       <View
         style={{
-          height: "85%",
+          height: "80%",
           width: "100%",
           backgroundColor: "#fff",
           borderTopLeftRadius: 20,
@@ -131,67 +179,100 @@ const EditUserProductsScreen = props => {
             <View>
               <Text style={styles.headerText}>Edit</Text>
             </View>
-            <TouchableOpacity onPress={editorAddProductsHandler}>
-              <Icon
-                reverse
-                name="ios-save"
-                type="ionicon"
-                size={25}
-                color={Colors.primaryColor}
-              />
-            </TouchableOpacity>
-          </View>
-          <ScrollView>
-            <View>
-              <View style={styles.formItem}>
-                <Text style={styles.formText}>Title</Text>
-                <TextInput
-                  style={styles.inputfield}
-                  value={title}
-                  onChangeText={titleChangeHandler}
-                  keyboardType="default"
-                  autoCapitalize="sentences"
-                  autoCorrect
-                  returnKeyType="done"
+            {!isLoading && (
+              <TouchableOpacity onPress={editorAddProductsHandler}>
+                <Icon
+                  reverse
+                  name="ios-save"
+                  type="ionicon"
+                  size={25}
+                  color={Colors.primaryColor}
                 />
+              </TouchableOpacity>
+            )}
+            {isLoading && (
+              <View style={styles.savingIndicatorContainer}>
+                <ActivityIndicator size="large" color="#ffffff" />
               </View>
-              {!titleIsValid && addMode && (
-                <Text style={{ color: "red", fontWeight: "bold" }}>
-                  Invalid
-                </Text>
-              )}
-              {addMode && (
-                <View style={styles.formItem}>
-                  <Text style={styles.formText}>Price</Text>
-                  <TextInput
-                    style={styles.inputfield}
-                    value={price.toString()}
-                    onChangeText={newVal => setPrice(newVal)}
-                    keyboardType="decimal-pad"
+            )}
+          </View>
+          <KeyboardAvoidingView behavior="position">
+            <ScrollView>
+              <View style={{ flex: 1 }}>
+                {!inputFormState.formValidity && (
+                  <View
+                    style={{
+                      width: "98%",
+                      borderWidth: 2,
+                      borderColor: "red",
+                      padding: 10
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: "98%",
+                        borderWidth: 2,
+                        borderColor: "black",
+                        padding: 10
+                      }}
+                    >
+                      <Text style={{ color: "black" }}>
+                        Please Do Not Leave Any Field Empty
+                      </Text>
+                    </View>
+                  </View>
+                )}
+                <View>
+                  <Input
+                    id="imageUrl"
+                    inputLabel="imageUrl"
+                    keyboardType="default"
+                    returnKeyType="done"
+                    onInputChange={inputValueChangeHandler}
+                    initialValue={addMode ? "" : selectedProduct.imageUrl}
+                    initiallyValid={addMode ? false : true}
+                    required
+                  />
+                  <Input
+                    id="title"
+                    inputLabel="title"
+                    keyboardType="default"
+                    returnKeyType="done"
+                    autoCapitalize="sentences"
+                    autoCorrect
+                    onInputChange={inputValueChangeHandler}
+                    initialValue={addMode ? "" : selectedProduct.title}
+                    required
+                  />
+
+                  {addMode && (
+                    <Input
+                      id="price"
+                      inputLabel="price"
+                      keyboardType="decimal-pad"
+                      returnKeyType="default"
+                      onInputChange={inputValueChangeHandler}
+                      required
+                      min={0.1}
+                    />
+                  )}
+                  <Input
+                    id="description"
+                    inputLabel="description"
+                    keyboardType="default"
+                    returnKeyType="done"
+                    autoCapitalize="sentences"
+                    autoCorrect
+                    onInputChange={inputValueChangeHandler}
+                    initialValue={addMode ? "" : selectedProduct.description}
+                    initiallyValid={addMode ? false : true}
+                    required
+                    minLength={5}
                   />
                 </View>
-              )}
-              <View style={styles.formItem}>
-                <Text style={styles.formText}>Image Url</Text>
-                <TextInput
-                  style={styles.inputfield}
-                  value={imageUrl}
-                  onChangeText={newVal => setImageUrl(newVal)}
-                  keyboardType="default"
-                />
               </View>
-              <View style={styles.formItem}>
-                <Text style={styles.formText}>Description</Text>
-                <TextInput
-                  style={styles.inputfield}
-                  onChangeText={newVal => setDescription(newVal)}
-                  value={description}
-                  keyboardType="default"
-                  multiline
-                />
-              </View>
-            </View>
-          </ScrollView>
+            </ScrollView>
+          </KeyboardAvoidingView>
         </View>
       </View>
     </View>
@@ -225,6 +306,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10
+  },
+  savingIndicatorContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 50,
+    height: 50,
+    backgroundColor: Colors.primaryColor,
+    borderRadius:25,
+    
   }
 });
 

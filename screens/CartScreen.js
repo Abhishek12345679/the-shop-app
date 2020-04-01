@@ -6,6 +6,7 @@ import {
   FlatList,
   TouchableOpacity
 } from "react-native";
+import { Snackbar } from "react-native-paper";
 import Colors from "../constants/Colors";
 import { useSelector, useDispatch } from "react-redux";
 import CartItem from "../components/shop/CartItem";
@@ -14,8 +15,11 @@ import * as cartActions from "../store/actions/cart";
 import * as orderActions from "../store/actions/orders";
 
 import DefaultText from "../components/UI/DefaultText";
+import { useState } from "react";
 
 const CartScreen = props => {
+  const [isVisible, setIsVisible] = useState(false);
+
   const dispatch = useDispatch();
   const cartTotalAmt = useSelector(state => state.cart.sum);
 
@@ -73,12 +77,25 @@ const CartScreen = props => {
         disabled={cartItem.length === 0}
         onPress={() => {
           dispatch(orderActions.addOrder(cartItem, cartTotalAmt));
+          setIsVisible(true);
         }}
       >
         <View style={styles.submitOrderBtn}>
           <DefaultText style={styles.submitOrderText}>Submit</DefaultText>
         </View>
       </TouchableOpacity>
+      <Snackbar
+        visible={isVisible}
+        onDismiss={() => setIsVisible(false)}
+        duration={2000}
+        action={{
+          label: "UNDO",
+          onPress: () => {}
+        }}
+        style={{ backgroundColor: Colors.primaryColor, height: 50 }}
+      >
+        Items Ordered
+      </Snackbar>
     </View>
   );
 };

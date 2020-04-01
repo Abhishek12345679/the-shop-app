@@ -17,9 +17,10 @@ const OrderItem = props => {
           <Text style={styles.date}>{props.date}</Text>
         </View>
         {isExpanded && (
-          <View>
+          <View style={styles.detailItems}>
             {props.items.map(cartItem => (
               <CartItem
+                style={styles.expanded}
                 key={cartItem.productId}
                 quantity={cartItem.quantity}
                 productSum={cartItem.sum}
@@ -36,36 +37,48 @@ const OrderItem = props => {
 
 const styles = StyleSheet.create({
   orderItem: {
-    backgroundColor: "white",
-    height: 100,
-    shadowOffset: {
-      width: 2,
-      height: 4
-    },
-    shadowOpacity: 0.35,
-    elevation: 7,
-    shadowRadius: 8,
-    borderRadius: 10,
     shadowColor: "black",
-    marginHorizontal: 15,
-    marginVertical: 7
+    shadowOpacity: 0.26,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 5,
+    borderRadius: 10,
+    backgroundColor: "white",
+    margin: 20,
+    padding: 10,
+    alignItems: "center"
   },
   summary: {
+    flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    flexDirection: "row",
-    paddingHorizontal: 10,
-    marginTop: 5
+    width: "100%",
+    marginBottom: 15
   },
-  amount: {
-    color: "#000",
-    fontFamily: "standard-apple-bold",
-    fontSize: 20
+  totalAmount: {
+    fontFamily: "open-sans-bold",
+    fontSize: 16
   },
   date: {
-    color: "#000",
-    fontFamily: "standard-apple",
-    fontSize: 13
+    fontSize: 16,
+    fontFamily: "open-sans",
+    color: "#888"
+  },
+  detailItems: {
+    width: "100%"
+  },
+  expanded: {
+    backgroundColor: "#fff",
+    marginVertical: 8,
+    borderRadius: 0,
+    shadowOffset: {
+      width: 0,
+      height: 0
+    },
+    shadowOpacity: 0,
+    elevation: 0,
+    shadowRadius: 0,
+    marginHorizontal: 20
   }
 });
 
