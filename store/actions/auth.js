@@ -6,6 +6,8 @@ import { AsyncStorage } from "react-native";
 export const AUTHENTICATE = "AUTHENTICATE";
 export const LOG_OUT = "LOG_OUT";
 
+import config from "../../config";
+
 export const logout = () => {
   deleteDataFromStorage();
   return { type: LOG_OUT };
@@ -18,7 +20,8 @@ export const authenticate = (token, userId, email) => {
 export const signin = (email, password) => {
   return async (dispatch) => {
     const response = await fetch(
-      "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAaiEpvTxrurvqAs8mSngzb8B1h8eatQc0",
+      "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" +
+        config.FIREBASE_API_KEY,
       {
         method: "POST",
         headers: {
@@ -63,7 +66,8 @@ export const signin = (email, password) => {
 export const signup = (email, password) => {
   return async (dispatch) => {
     const response = await fetch(
-      "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAaiEpvTxrurvqAs8mSngzb8B1h8eatQc0",
+      "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" +
+        config.FIREBASE_API_KEY,
       {
         method: "POST",
         headers: {
