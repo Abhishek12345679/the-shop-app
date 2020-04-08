@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useReducer } from "react";
+import React, {
+  useState,
+  useCallback,
+  useReducer,
+  useEffect,
+  useRef,
+} from "react";
 import {
   StyleSheet,
   Text,
@@ -6,7 +12,7 @@ import {
   ScrollView,
   TouchableOpacity,
   KeyboardAvoidingView,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
@@ -23,11 +29,11 @@ const formInputReducer = (state, action) => {
   if (action.type === FORM_INPUT_UPDATE) {
     const updatedInputState = {
       ...state.inputState,
-      [action.inputId]: action.value
+      [action.inputId]: action.value,
     };
     const updatedValidities = {
       ...state.inputValidities,
-      [action.inputId]: action.isValid
+      [action.inputId]: action.isValid,
     };
     let fromIsValid = true;
 
@@ -38,25 +44,29 @@ const formInputReducer = (state, action) => {
     return {
       inputState: updatedInputState,
       inputValidities: updatedValidities,
-      formValidity: fromIsValid
+      formValidity: fromIsValid,
     };
   }
   return state;
 };
 
-const EditUserProductsScreen = props => {
+const EditUserProductsScreen = (props) => {
   const [arrowPressed, setArrowPressed] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  // const [isVisible, setIsVisible] = useState(false);
   const [error, setError] = useState();
+
+  useEffect(() => {
+    if (error) Alert.alert("Error", error, [{ text: "close" }]);
+  }, [error]);
 
   const dispatch = useDispatch();
 
-  const availableProducts = useSelector(state => state.products.userProducts);
+  const availableProducts = useSelector((state) => state.products.userProducts);
   const selectedProductId = props.navigation.getParam("productId");
   const selectedProduct = availableProducts.find(
-    prod => prod.id === selectedProductId
+    (prod) => prod.id === selectedProductId
   );
 
   const addMode = !selectedProduct;
@@ -68,28 +78,28 @@ const EditUserProductsScreen = props => {
         title: addMode ? "" : selectedProduct.title,
         imageUrl: addMode ? "" : selectedProduct.imageUrl,
         description: addMode ? "" : selectedProduct.description,
-        price: ""
+        price: "",
       },
       inputValidities: {
         title: addMode ? false : true,
         imageUrl: addMode ? false : true,
         description: addMode ? false : true,
-        price: addMode ? false : true
+        price: addMode ? false : true,
       },
-      formValidity: addMode ? false : true
+      formValidity: addMode ? false : true,
     }
   );
 
   const editorAddProductsHandler = useCallback(async () => {
     if (!inputFormState.formValidity) {
       Alert.alert("Invalid Input", "Please do not leave the fields blank", [
-        { text: "close" }
+        { text: "close" },
       ]);
       return;
     }
 
-    setIsLoading(true);
     setError(null);
+    setIsLoading(true);
 
     try {
       if (addMode) {
@@ -107,8 +117,7 @@ const EditUserProductsScreen = props => {
             selectedProductId,
             inputFormState.inputState.title,
             inputFormState.inputState.imageUrl,
-            inputFormState.inputState.description,
-            +inputFormState.inputState.price
+            inputFormState.inputState.description
           )
         );
       }
@@ -116,6 +125,7 @@ const EditUserProductsScreen = props => {
     } catch (err) {
       setError(err.message);
     }
+    setIsLoading(false);
   }, [dispatch, selectedProductId, inputFormState]);
 
   const inputValueChangeHandler = useCallback(
@@ -124,7 +134,7 @@ const EditUserProductsScreen = props => {
         type: FORM_INPUT_UPDATE,
         value: inputValue,
         isValid: inputValidity,
-        inputId: inputIdentifier
+        inputId: inputIdentifier,
       });
     },
     [dispatchInputFormState]
@@ -141,7 +151,7 @@ const EditUserProductsScreen = props => {
             size={50}
             color="white"
             onPress={() => {
-              setArrowPressed(prevState => !prevState);
+              setArrowPressed((prevState) => !prevState);
               props.navigation.navigate("UserProductsScreen");
             }}
           />
@@ -151,7 +161,7 @@ const EditUserProductsScreen = props => {
             size={50}
             color="white"
             onPress={() => {
-              setArrowPressed(prevState => !prevState);
+              setArrowPressed((prevState) => !prevState);
               props.navigation.navigate("UserProductsScreen");
             }}
           />
@@ -167,11 +177,11 @@ const EditUserProductsScreen = props => {
           shadowColor: "#000",
           shadowOffset: {
             width: 10,
-            height: 0
+            height: 0,
           },
           shadowOpacity: 0.5,
           shadowRadius: 10,
-          padding: 20
+          padding: 20,
         }}
       >
         <View style={styles.form}>
@@ -180,7 +190,10 @@ const EditUserProductsScreen = props => {
               <Text style={styles.headerText}>Edit</Text>
             </View>
             {!isLoading && (
-              <TouchableOpacity onPress={editorAddProductsHandler}>
+              <TouchableOpacity
+                onPress={editorAddProductsHandler}
+                style={styles.savingIndicatorContainer}
+              >
                 <Icon
                   reverse
                   name="ios-save"
@@ -192,7 +205,7 @@ const EditUserProductsScreen = props => {
             )}
             {isLoading && (
               <View style={styles.savingIndicatorContainer}>
-                <ActivityIndicator size="large" color="#ffffff" />
+                <ActivityIndicator size="small" color="#ffffff" />
               </View>
             )}
           </View>
@@ -200,22 +213,8 @@ const EditUserProductsScreen = props => {
             <ScrollView>
               <View style={{ flex: 1 }}>
                 {!inputFormState.formValidity && (
-                  <View
-                    style={{
-                      width: "98%",
-                      borderWidth: 2,
-                      borderColor: "red",
-                      padding: 10
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: "98%",
-                        borderWidth: 2,
-                        borderColor: "black",
-                        padding: 10
-                      }}
-                    >
+                  <View style={styles.errRedBox}>
+                    <View style={styles.errBlackBox}>
                       <Text style={{ color: "black" }}>
                         Please Do Not Leave Any Field Empty
                       </Text>
@@ -281,41 +280,91 @@ const EditUserProductsScreen = props => {
 
 const styles = StyleSheet.create({
   form: {
-    flexDirection: "column"
+    flexDirection: "column",
   },
   formItem: {
-    marginVertical: 10
+    marginVertical: 10,
   },
   formText: {
     fontFamily: "standard-apple-bold",
     fontSize: 15,
-    color: Colors.primaryColor
+    color: Colors.primaryColor,
   },
   headerText: {
     fontFamily: "standard-apple-bold",
-    fontSize: 50
+    fontSize: 50,
   },
   inputfield: {
     borderBottomWidth: 2,
     borderColor: Colors.primaryColor,
     height: 25,
-    color: "#ccc"
+    color: "#ccc",
   },
   headerItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10
+    marginBottom: 10,
   },
   savingIndicatorContainer: {
     justifyContent: "center",
     alignItems: "center",
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     backgroundColor: Colors.primaryColor,
-    borderRadius:25,
-    
-  }
+    borderRadius: 20,
+    padding: 10,
+  },
+  errRedBox: {
+    width: "98%",
+    borderWidth: 2,
+    borderColor: "red",
+    padding: 10,
+  },
+  errBlackBox: {
+    width: "98%",
+    borderWidth: 2,
+    borderColor: "black",
+    padding: 10,
+  },
 });
 
 export default EditUserProductsScreen;
+
+// import React, { useRef } from "react";
+// import { View, Button } from "react-native";
+// import RBSheet from "react-native-raw-bottom-sheet";
+
+// const EditUserProductsScreen = (props) => {
+//   const refRBSheet = useRef();
+//   return (
+//     <View
+//       style={{
+//         flex: 1,
+//         justifyContent: "center",
+//         alignItems: "center",
+//         backgroundColor: "#000",
+//       }}
+//     >
+//       <Button
+//         title="OPEN BOTTOM SHEET"
+//         onPress={() => refRBSheet.current.open()}
+//       />
+//       <RBSheet
+//         ref={refRBSheet}
+//         closeOnDragDown={true}
+//         closeOnPressMask={false}
+//         customStyles={{
+//           wrapper: {
+//             backgroundColor: "transparent",
+//           },
+//           draggableIcon: {
+//             backgroundColor: "#000",
+//           },
+//         }}
+//       >
+//       </RBSheet>
+//     </View>
+//   );
+// };
+// export default EditUserProductsScreen;

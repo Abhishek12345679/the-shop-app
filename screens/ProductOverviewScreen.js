@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Button,
-  StatusBar
+  StatusBar,
 } from "react-native";
 import { Snackbar } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
@@ -22,26 +22,30 @@ import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../components/UI/HeaderButton";
 import Colors from "../constants/Colors";
 
-const ProductOverviewScreen = props => {
-  const availableProducts = useSelector(state => state.products.products);
+const ProductOverviewScreen = (props) => {
+  const availableProducts = useSelector((state) => state.products.products);
+  const auth = useSelector((state) => state.auth.email);
+
   const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState();
   const [isVisible, setIsVisible] = useState(false);
+  const [loginSnackIsVisible, setLoginSnackIsVisible] = useState(false);
 
   const loadProducts = useCallback(async () => {
     console.log("LOAD");
-
     setError(null);
-    setIsLoading(true);
+    setIsRefreshing(true);
+
     try {
       await dispatch(productActions.fetchProducts());
     } catch (err) {
       setError(err.message);
     }
-    setIsLoading(false);
-  }, [setIsLoading, setError, dispatch]);
+    setIsRefreshing(false);
+  }, [setError, dispatch]);
 
   useEffect(() => {
     const willFocusSub = props.navigation.addListener(
@@ -55,22 +59,27 @@ const ProductOverviewScreen = props => {
   }, [loadProducts]);
 
   useEffect(() => {
-    loadProducts();
-  }, [dispatch, loadProducts]);
+    setIsLoading(true);
+    loadProducts().then(() => setIsLoading(false));
+  }, [dispatch, loadProducts, setIsLoading]);
 
-  const renderProductItem = itemData => {
+  useEffect(() => {
+    setLoginSnackIsVisible(true);
+  }, []);
+
+  const renderProductItem = (itemData) => {
     const selectProductHandler = () => {
       props.navigation.navigate({
         routeName: "productsDetail",
         params: {
           productId: itemData.item.id,
-          productTitle: itemData.item.title
-        }
+          productTitle: itemData.item.title,
+        },
       });
     };
 
     return (
-      <View style={{marginHorizontal:10}}>
+      <View style={{ marginHorizontal: 15 }}>
         <Product
           image={itemData.item.imageUrl}
           title={itemData.item.title}
@@ -92,7 +101,7 @@ const ProductOverviewScreen = props => {
                 type="ionicon"
                 size={18}
                 containerStyle={{ marginBottom: 5 }}
-                color="green"
+                color={Colors.primaryColor}
               />
             </TouchableOpacity>
           </View>
@@ -128,9 +137,11 @@ const ProductOverviewScreen = props => {
     );
   }
   return (
-    <View style={{ flex: 1 }}>
-      <StatusBar backgroundColor="light" barStyle="light-content" />
+    <View style={{ flex: 1, backgroundColor: "white" }}>
+      <StatusBar barStyle="dark-content" />
       <FlatList
+        onRefresh={loadProducts}
+        refreshing={isRefreshing}
         key={availableProducts.id}
         data={availableProducts}
         renderItem={renderProductItem}
@@ -142,30 +153,44 @@ const ProductOverviewScreen = props => {
         duration={2000}
         action={{
           label: "UNDO",
-          onPress: () => {}
+          onPress: () => {},
         }}
         style={{ backgroundColor: Colors.primaryColor, height: 50 }}
       >
         Added to cart 🎒
       </Snackbar>
+      <Snackbar
+        visible={loginSnackIsVisible}
+        onDismiss={() => setLoginSnackIsVisible(false)}
+        duration={1000}
+        action={{
+          label: "UNDO",
+          onPress: () => {},
+        }}
+        style={{ backgroundColor: Colors.primaryColor, height: 50 }}
+      >
+        Logged in as
+        <Text> </Text>
+        {auth}
+      </Snackbar>
     </View>
   );
 };
 
-ProductOverviewScreen.navigationOptions = navData => {
+ProductOverviewScreen.navigationOptions = (navData) => {
   return {
     headerTitle: "Products",
     headerRight: () => (
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
           title="cart"
-          iconName={Platform.OS === "android" ? "md-cart" : "ios-cart"}
+          iconName={"shoppingcart"}
           onPress={() => {
             navData.navigation.navigate("cartScreen");
           }}
         />
       </HeaderButtons>
-    )
+    ),
   };
 };
 
@@ -173,12 +198,13 @@ const styles = StyleSheet.create({
   centered: {
     justifyContent: "center",
     alignItems: "center",
-    flex: 1
+    flex: 1,
+    backgroundColor: "white",
   },
   errText: {
     color: Colors.primaryColor,
-    fontWeight: "bold"
-  }
+    fontWeight: "bold",
+  },
 });
 
 export default ProductOverviewScreen;

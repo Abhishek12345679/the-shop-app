@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
 
 import Card from "../UI/Card";
 
-const Product = props => {
+const Product = (props) => {
   return (
     <TouchableOpacity
       {...props}
@@ -17,8 +17,10 @@ const Product = props => {
         </View>
         <View style={styles.footer}>
           <View style={styles.titlePriceColumn}>
-            <Text>{props.title}</Text>
-            <Text style={{ color: "green", fontWeight: "bold" }}>
+            <Text style={{ fontFamily: "standard-apple" }}>
+              {props.title}
+            </Text>
+            <Text style={{ color: "#A9A9A9", fontFamily:'standard-apple', marginTop:3 }}>
               ₹{props.price.toFixed(2)}
             </Text>
           </View>
@@ -32,10 +34,10 @@ const Product = props => {
 const styles = StyleSheet.create({
   productItem: {
     width: "100%",
-    height: 200,
+    height: 250,
     flexDirection: "column",
     marginVertical: 10,
-    borderRadius: 10
+    borderRadius: 10,
   },
   image: {
     width: "100%",
@@ -43,23 +45,23 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    overflow: "hidden"
+    overflow: "hidden",
   },
   header: {
     height: "75%",
-    marginBottom: 5
+    marginBottom: 5,
   },
   footer: {
     height: "25%",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 15
+    paddingHorizontal: 15,
   },
   addToCartIcon: {},
   titlePriceColumn: {
-    flexDirection: "column"
-  }
+    flexDirection: "column",
+  },
 });
 
 export default Product;

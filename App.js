@@ -8,6 +8,7 @@ import productsReducer from "./store/reducers/products";
 import ProductsNavigator from "./navigation/ProductsNavigator";
 import cartReducer from "./store/reducers/cart";
 import ordersReducer from "./store/reducers/orders";
+import AuthReducer from "./store/reducers/auth";
 
 import { AppLoading } from "expo";
 
@@ -15,7 +16,8 @@ export default function App() {
   const rootReducer = combineReducers({
     products: productsReducer,
     cart: cartReducer,
-    orders: ordersReducer
+    orders: ordersReducer,
+    auth: AuthReducer
   });
 
   const store = createStore(rootReducer, applyMiddleware(ReduxThunk));
@@ -23,7 +25,7 @@ export default function App() {
   const [dataLoaded, setDataLoaded] = useState(false);
 
   const fetchFonts = () => {
-    Font.loadAsync({
+    return Font.loadAsync({
       "source-code": require("./assets/fonts/SourceCodePro-Regular.ttf"),
       "source-code-bold": require("./assets/fonts/SourceCodePro-Bold.ttf"),
       "standard-apple": require("./assets/fonts/SF-Pro-Text-Regular.ttf"),

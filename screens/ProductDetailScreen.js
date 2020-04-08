@@ -1,20 +1,27 @@
-import React, { useEffect } from "react";
-import { Text, View, Image, StyleSheet, ScrollView } from "react-native";
+import React from "react";
+import {
+  Text,
+  View,
+  Image,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { Icon } from "react-native-elements";
-import DefaultText from "../components/UI/DefaultText";
 
 import * as cartActions from "../store/actions/cart";
+import Colors from "../constants/Colors";
 
-const ProductsDetailScreen = props => {
+const ProductsDetailScreen = (props) => {
   const productId = props.navigation.getParam("productId");
   // const productTitle = props.navigation.getParam("productTitle");
 
   const dispatch = useDispatch();
 
-  const availableProducts = useSelector(state => state.products.products);
+  const availableProducts = useSelector((state) => state.products.products);
   const selectedProduct = availableProducts.find(
-    product => product.id === productId
+    (product) => product.id === productId
   );
 
   /* to avoid re-renders of the setParams, 
@@ -31,43 +38,37 @@ const ProductsDetailScreen = props => {
             source={{ uri: selectedProduct.imageUrl }}
             style={styles.image}
           />
-          <View style={styles.iconContainer}>
+          <TouchableOpacity
+            style={styles.iconContainer}
+            onPress={() => {
+              dispatch(cartActions.addToCart(selectedProduct));
+            }}
+          >
             <Icon
               reverse
               name="ios-cart"
               type="ionicon"
-              color="green"
-              onPress={() => {
-                dispatch(cartActions.addToCart(selectedProduct));
-              }}
+              color={Colors.primaryColor}
               style={styles.iconheart}
             />
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.textRowOne}>
-          <DefaultText style={styles.title}>
+          <Text style={styles.title} numberOfLines={2}>
             {selectedProduct.title}
-          </DefaultText>
-          <DefaultText style={{ color: "green" }}>
-            ₹{selectedProduct.price.toFixed(2)}
-          </DefaultText>
-          <Text style={styles.textdesc}>{selectedProduct.description}</Text>
-          <Text style={styles.textdesc}>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio vitae
-            necessitatibus maiores inventore aut obcaecati itaque ab nisi
-            architecto hic minima voluptates reiciendis iste saepe, impedit
-            consequuntur laborum doloribus facere!
           </Text>
+          <Text style={styles.price}>₹{selectedProduct.price.toFixed(2)}</Text>
+          <Text style={styles.textdesc}>{selectedProduct.description}</Text>
         </View>
       </View>
     </ScrollView>
   );
 };
 
-ProductsDetailScreen.navigationOptions = navData => {
+ProductsDetailScreen.navigationOptions = (navData) => {
   const headerTitle = navData.navigation.getParam("productTitle");
   return {
-    headerTitle: headerTitle
+    headerTitle: headerTitle,
   };
 };
 
@@ -76,39 +77,44 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     resizeMode: "cover",
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
   },
   screen: {
     flex: 1,
     flexDirection: "column",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   title: {
-    fontSize: 15,
-    fontWeight: "bold"
+    fontSize: 25,
+    fontFamily: "standard-apple-bold",
+    marginTop: 10,
+    color: Colors.primaryColor,
   },
   textRowOne: {
     flexDirection: "column",
     paddingHorizontal: 10,
-    position: "relative"
+    position: "relative",
   },
   textdesc: {
-    fontWeight: "bold",
-    color: "black",
-    marginVertical: 5
+    fontFamily: "standard-apple",
+    marginVertical: 10,
+    fontSize: 15,
   },
   imageContainer: {
-    height: 250
+    height: 250,
   },
   iconContainer: {
     bottom: 70,
     justifyContent: "space-around",
-    alignItems: "flex-end"
+    alignItems: "flex-end",
   },
   iconheart: {
     marginEnd: 10,
-    marginBottom: 8
-  }
+    marginBottom: 8,
+  },
+  price: {
+    color: "#A9a9a9",
+  },
 });
 
 export default ProductsDetailScreen;

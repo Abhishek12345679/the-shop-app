@@ -24,7 +24,7 @@ const inputReducer = (state, action) => {
 };
 
 const Input = props => {
-    //initial state snapshot (for the most part)
+  //initial state snapshot (for the most part)
   const [inputState, dispatch] = useReducer(inputReducer, {
     value: props.initialValue ? props.initialValue : "",
     isValid: props.initiallyValid,
@@ -73,14 +73,21 @@ const Input = props => {
   };
   return (
     <View style={styles.formItem}>
-      <Text style={styles.formText}>{props.inputLabel}</Text>
+      <Text style={{ ...styles.formText, ...props.style }}>
+        {props.inputLabel}
+      </Text>
       <TextInput
         {...props}
-        style={styles.inputfield}
+        style={{ ...styles.inputfield, ...props.style }}
         value={inputState.value}
         onChangeText={inputValueChangeHandler}
         onBlur={lostFocusHandler}
       />
+      {!inputState.isValid && inputState.touched && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{props.errorText}</Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -99,6 +106,10 @@ const styles = StyleSheet.create({
     borderColor: Colors.primaryColor,
     height: 25,
     color: "#000"
+  },
+  errorText: {
+    color: "red",
+    fontSize: 13
   }
 });
 

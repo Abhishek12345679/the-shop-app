@@ -4,7 +4,8 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 } from "react-native";
 import { Snackbar } from "react-native-paper";
 import Colors from "../constants/Colors";
@@ -19,6 +20,7 @@ import { useState } from "react";
 
 const CartScreen = props => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
   const cartTotalAmt = useSelector(state => state.cart.sum);
@@ -75,13 +77,18 @@ const CartScreen = props => {
       <TouchableOpacity
         style={{ alignItems: "center" }}
         disabled={cartItem.length === 0}
-        onPress={() => {
-          dispatch(orderActions.addOrder(cartItem, cartTotalAmt));
+        onPress={async () => {
+          setIsLoading(true);
+          await dispatch(orderActions.addOrder(cartItem, cartTotalAmt));
+          setIsLoading(false);
           setIsVisible(true);
         }}
       >
         <View style={styles.submitOrderBtn}>
-          <DefaultText style={styles.submitOrderText}>Submit</DefaultText>
+          {!isLoading && (
+            <DefaultText style={styles.submitOrderText}>Submit</DefaultText>
+          )}
+          {isLoading && <ActivityIndicator size="small" color="#fff" />}
         </View>
       </TouchableOpacity>
       <Snackbar
@@ -103,7 +110,8 @@ const CartScreen = props => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    padding: 0
+    padding: 0,
+    backgroundColor:"#fff"
   },
   titleText: {
     fontFamily: "standard-apple-bold",
@@ -125,26 +133,23 @@ const styles = StyleSheet.create({
     width: 80,
     height: 40,
     padding: 10,
-    borderRadius: 10,
 
     shadowColor: "#000",
     shadowOffset: {
-      width: 10,
-      height: 10
+      width: 3,
+      height: 2
     },
     shadowOpacity: 0.6,
     elevation: 70,
-    shadowRadius: 0
   },
   submitOrderBtn: {
-    width: 125,
-    height: 50,
+    width: '98%',
+    height: 65,
     padding: 10,
     backgroundColor: Colors.primaryColor,
-    borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10
+    marginBottom:10
   },
   submitOrderText: {
     color: "#fff",
