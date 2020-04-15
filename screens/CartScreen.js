@@ -5,7 +5,7 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import { Snackbar } from "react-native-paper";
 import Colors from "../constants/Colors";
@@ -18,14 +18,14 @@ import * as orderActions from "../store/actions/orders";
 import DefaultText from "../components/UI/DefaultText";
 import { useState } from "react";
 
-const CartScreen = props => {
+const CartScreen = (props) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
-  const cartTotalAmt = useSelector(state => state.cart.sum);
+  const cartTotalAmt = useSelector((state) => state.cart.sum);
 
-  const cartItem = useSelector(state => {
+  const cartItem = useSelector((state) => {
     const transformedCartItems = [];
 
     // for in loop
@@ -36,7 +36,7 @@ const CartScreen = props => {
         productPrice: state.cart.items[key].productPrice,
         quantity: state.cart.items[key].quantity,
         sum: state.cart.items[key].sum,
-        imageUrl: state.cart.items[key].imageUrl
+        imageUrl: state.cart.items[key].imageUrl,
       });
     }
     return transformedCartItems.sort((a, b) => {
@@ -56,10 +56,10 @@ const CartScreen = props => {
         </View>
       </View>
       <FlatList
-        keyExtractor={item => item.productId}
+        keyExtractor={(item) => item.productId}
         contentContainerStyle={{ flexGrow: 1 }}
         data={cartItem}
-        renderItem={itemData => (
+        renderItem={(itemData) => (
           <CartItem
             isDeleteable
             productTitle={itemData.item.productTitle}
@@ -97,7 +97,7 @@ const CartScreen = props => {
         duration={2000}
         action={{
           label: "UNDO",
-          onPress: () => {}
+          onPress: () => {},
         }}
         style={{ backgroundColor: Colors.primaryColor, height: 50 }}
       >
@@ -111,12 +111,12 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     padding: 0,
-    backgroundColor:"#fff"
+    backgroundColor: "#fff",
   },
   titleText: {
     fontFamily: "standard-apple-bold",
     fontSize: 40,
-    marginStart: 10
+    marginStart: 10,
   },
   Row: {
     flexDirection: "row",
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
     height: 70,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
   productPriceContainer: {
     backgroundColor: Colors.primaryColor,
@@ -137,29 +137,29 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: {
       width: 3,
-      height: 2
+      height: 2,
     },
     shadowOpacity: 0.6,
     elevation: 70,
   },
   submitOrderBtn: {
-    width: '98%',
+    width: "98%",
     height: 65,
     padding: 10,
     backgroundColor: Colors.primaryColor,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom:10
+    marginBottom: 10,
   },
   submitOrderText: {
     color: "#fff",
     fontSize: 20,
-    fontFamily: "standard-apple-bold"
-  }
+    fontFamily: "standard-apple-bold",
+  },
 });
 
-CartScreen.navigationOptions = {
-  headerTitle: "Your Cart"
+export const screenOptions = {
+  headerTitle: "Your Cart",
 };
 
 export default CartScreen;

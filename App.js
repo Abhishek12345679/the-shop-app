@@ -5,7 +5,7 @@ import { createStore, combineReducers, applyMiddleware } from "redux";
 import ReduxThunk from "redux-thunk";
 
 import productsReducer from "./store/reducers/products";
-import ProductsNavigator from "./navigation/ProductsNavigator";
+import NavigationContainer from "./navigation/NavigationContainer";
 import cartReducer from "./store/reducers/cart";
 import ordersReducer from "./store/reducers/orders";
 import AuthReducer from "./store/reducers/auth";
@@ -17,7 +17,7 @@ export default function App() {
     products: productsReducer,
     cart: cartReducer,
     orders: ordersReducer,
-    auth: AuthReducer
+    auth: AuthReducer,
   });
 
   const store = createStore(rootReducer, applyMiddleware(ReduxThunk));
@@ -29,7 +29,7 @@ export default function App() {
       "source-code": require("./assets/fonts/SourceCodePro-Regular.ttf"),
       "source-code-bold": require("./assets/fonts/SourceCodePro-Bold.ttf"),
       "standard-apple": require("./assets/fonts/SF-Pro-Text-Regular.ttf"),
-      "standard-apple-bold": require("./assets/fonts/SF-Pro-Display-Bold.ttf")
+      "standard-apple-bold": require("./assets/fonts/SF-Pro-Display-Bold.ttf"),
     });
   };
 
@@ -38,14 +38,14 @@ export default function App() {
       <AppLoading
         startAsync={fetchFonts}
         onFinish={() => setDataLoaded(true)}
-        onError={err => console.log(err)}
+        onError={(err) => console.log(err)}
       />
     );
   }
 
   return (
     <Provider store={store}>
-      <ProductsNavigator />
+      <NavigationContainer />
     </Provider>
   );
 }

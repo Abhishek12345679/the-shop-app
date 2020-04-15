@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 
 import * as authActions from "../store/actions/auth";
 
-const SplashScreen = props => {
+const SplashScreen = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -13,7 +13,8 @@ const SplashScreen = props => {
       const userData = await AsyncStorage.getItem("userData");
 
       if (!userData) {
-        props.navigation.navigate("Auth");
+        // props.navigation.navigate("Auth");
+        dispatch(authActions.didTryAL())
         return;
       }
 
@@ -22,11 +23,15 @@ const SplashScreen = props => {
 
       const expirationDate = new Date(expiryDate);
       if (expirationDate <= new Date() || !token || !userId) {
-        props.navigation.navigate("Auth");
+        // props.navigation.navigate("Auth");
+        dispatch(authActions.didTryAL())
         return;
       }
-      props.navigation.navigate("Shop");
-      dispatch(authActions.authenticate(token, userId));
+      // props.navigation.navigate("Shop");
+
+      const expirationTime = expirationDate.getTime() - new Date().getTime();
+
+      dispatch(authActions.authenticate(token, userId, expirationTime));
     };
     tryLogin();
   }, [dispatch]);
@@ -43,13 +48,13 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   text: {
     fontFamily: "standard-apple-bold",
     fontSize: 20,
-    color: Colors.primaryColor
-  }
+    color: Colors.primaryColor,
+  },
 });
 
 export default SplashScreen;

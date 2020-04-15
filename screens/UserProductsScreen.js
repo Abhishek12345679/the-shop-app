@@ -28,7 +28,7 @@ const UserProductsScreen = (props) => {
           item={itemData.item}
           onSelectProduct={() => {
             props.navigation.navigate({
-              routeName: "Modal",
+              name: "EditUserProductsScreen",
               params: {
                 productId: itemData.item.id,
               },
@@ -114,17 +114,17 @@ const UserProductsScreen = (props) => {
   );
 };
 
-UserProductsScreen.navigationOptions = (navData) => {
+export const screenOptions = (navData) => {
   return {
     headerTitle: "Your Listings",
     headerRight: () => (
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
           title="add"
-          iconName={"addfolder"}
+          iconName="addfolder"
           onPress={() => {
             navData.navigation.navigate({
-              routeName: "Modal",
+              name: "EditUserProductsScreen",
             });
           }}
         />

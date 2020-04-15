@@ -1,27 +1,54 @@
 import React from "react";
-import { createStackNavigator } from "react-navigation-stack";
-import { createBottomTabNavigator } from "react-navigation-tabs";
-import { createSwitchNavigator } from "react-navigation";
 
-import ProductsOverviewScreen from "../screens/ProductOverviewScreen";
-import ProductsDetailScreen from "../screens/ProductDetailScreen";
-import CartScreen from "../screens/CartScreen";
+import ProductsOverviewScreen, {
+  screenOptions as ProductsOverviewScreenOptions,
+} from "../screens/ProductOverviewScreen";
+import ProductsDetailScreen, {
+  screenOptions as ProductsDetailScreenOptions,
+} from "../screens/ProductDetailScreen";
+import CartScreen, {
+  screenOptions as CartScreenOptions,
+} from "../screens/CartScreen";
 import OrdersScreen from "../screens/OrdersScreen";
-import UserProductsScreen from "../screens/UserProductsScreen";
+import UserProductsScreen, {
+  screenOptions as UserProductsScreenOptions,
+} from "../screens/UserProductsScreen";
 import EditUserProductsScreen from "../screens/EditUserProductsScreen";
+import SettingsScreen, {
+  screenOptions as SettingsScreenOptions,
+} from "../screens/SettingsScreen";
 import AuthScreen from "../screens/AuthScreen";
-import SplashScreen from "../screens/SplashScreen";
-import SettingsScreen from "../screens/SettingsScreen";
 
 import Colors from "../constants/Colors";
 import { Platform } from "react-native";
-import { createAppContainer } from "react-navigation";
-import { enableScreens } from "react-native-screens";
 
+import { enableScreens } from "react-native-screens";
+import { createStackNavigator } from "@react-navigation/stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AntDesign } from "@expo/vector-icons";
 
 enableScreens();
 
+const modalNavOptions = {
+  mode: "none",
+  headerMode: "none", // This ensures we don't get two top bars.,
+  transparentCard: true,
+  defaultNavigationOptions: {
+    navigationOptions: {
+      cardStyle: {
+        backgroundColor: "transparent",
+        opacity: 1,
+      },
+      transitionConfig: () => ({
+        containerStyle: {
+          backgroundColor: "transparent",
+        },
+      }),
+    },
+  },
+};
+
+// default stack options
 const defaultStackNavigationOptions = {
   defaultNavigationOptions: {
     headerStyle: {
@@ -44,6 +71,7 @@ const defaultStackNavigationOptions = {
   },
 };
 
+// default bottomtab options
 const defaultBottomTabNavigationOptions = {
   defaultNavigationOptions: {
     tabBarOptions: {
@@ -54,117 +82,144 @@ const defaultBottomTabNavigationOptions = {
   },
 };
 
-const ProductsNavigator = createStackNavigator(
-  {
-    products_overview: ProductsOverviewScreen,
-    productsDetail: ProductsDetailScreen,
-    cartScreen: CartScreen,
-  },
-  defaultStackNavigationOptions
-);
+// products stack
 
-const OrdersNavigator = createStackNavigator(
-  {
-    ordersScreen: OrdersScreen,
-  },
-  defaultStackNavigationOptions
-);
+const ProductsStackNavigator = createStackNavigator();
 
-const UserProductsNavigator = createStackNavigator(
-  {
-    UserProductsScreen: {
-      screen: UserProductsScreen,
-    },
-  },
-  defaultStackNavigationOptions
-);
+export const ProductsNavigator = () => {
+  return (
+    <ProductsStackNavigator.Navigator
+      screenOptions={defaultStackNavigationOptions}
+    >
+      <ProductsStackNavigator.Screen
+        name="products_overview"
+        component={ProductsOverviewScreen}
+        options={ProductsOverviewScreenOptions}
+      />
+      <ProductsStackNavigator.Screen
+        name="productsDetail"
+        component={ProductsDetailScreen}
+        options={ProductsDetailScreenOptions}
+      />
+      <ProductsStackNavigator.Screen
+        name="cartScreen"
+        component={CartScreen}
+        options={CartScreenOptions}
+      />
+    </ProductsStackNavigator.Navigator>
+  );
+};
 
-const SettingsNavigator = createStackNavigator(
-  {
-    SettingsScreen: {
-      screen: SettingsScreen,
-    },
-  },
-  defaultStackNavigationOptions
-);
+const OrdersStackNavigator = createStackNavigator();
 
-// partial modal
-const UserProductsModalNavigator = createStackNavigator(
-  {
-    UserProductsScreen: {
-      screen: UserProductsNavigator,
-    },
-    Modal: {
-      screen: EditUserProductsScreen,
-    },
-  },
-  {
-    mode: "modal", // Remember to set the root navigator to display modally.
-    headerMode: "none", // This ensures we don't get two top bars.,
-    transparentCard: true,
-    defaultNavigationOptions: {
-      navigationOptions: {
-        cardStyle: {
-          backgroundColor: "transparent",
-          opacity: 1,
-        },
-        transitionConfig: () => ({
-          containerStyle: {
-            backgroundColor: "transparent",
-          },
-        }),
-      },
-    },
-  },
-  defaultStackNavigationOptions
-);
+export const OrdersNavigator = () => {
+  return (
+    <OrdersStackNavigator.Navigator
+      screenOptions={defaultStackNavigationOptions}
+    >
+      <OrdersStackNavigator.Screen
+        name="OrdersScreen"
+        component={OrdersScreen}
+        options={{ headerTitle: "Orders" }}
+      />
+    </OrdersStackNavigator.Navigator>
+  );
+};
 
-const BottomTabNavigator = createBottomTabNavigator(
-  {
-    products: {
-      screen: ProductsNavigator,
-      navigationOptions: {
-        tabBarLabel: "Products",
-        tabBarIcon: (
-          <AntDesign name="home" size={25} color={Colors.primaryColor} />
-        ),
-      },
-    },
-    orders: {
-      screen: OrdersNavigator,
-      navigationOptions: {
-        tabBarLabel: "Orders",
-        tabBarIcon: (
-          <AntDesign name="skin" size={25} color={Colors.primaryColor} />
-        ),
-      },
-    },
-    userProducts: {
-      screen: UserProductsModalNavigator,
-      navigationOptions: {
-        tabBarLabel: "Your Listings",
-        tabBarIcon: (
-          <AntDesign name="database" size={25} color={Colors.primaryColor} />
-        ),
-      },
-    },
-    Settings: {
-      screen: SettingsNavigator,
-      navigationOptions: {
-        tabBarLabel: "Settings",
-        tabBarIcon: (
-          <AntDesign name="setting" size={25} color={Colors.primaryColor} />
-        ),
-      },
-    },
-  },
-  defaultBottomTabNavigationOptions
-);
+const SettingsStackNavigator = createStackNavigator();
 
-const AuthAdjustMainNavigator = createSwitchNavigator({
-  Splash: SplashScreen,
-  Auth: AuthScreen,
-  Shop: BottomTabNavigator,
-});
+export const SettingsNavigator = () => {
+  return (
+    <SettingsStackNavigator.Navigator
+      screenOptions={defaultStackNavigationOptions}
+    >
+      <SettingsStackNavigator.Screen
+        name="SettingsScreen"
+        component={SettingsScreen}
+        options={SettingsScreenOptions}
+      />
+    </SettingsStackNavigator.Navigator>
+  );
+};
+const AuthStackNavigator = createStackNavigator();
+export const AuthNavigator = () => {
+  return (
+    <AuthStackNavigator.Navigator screenOptions={defaultStackNavigationOptions}>
+      <AuthStackNavigator.Screen name="AuthScreen" component={AuthScreen} 
+      />
+    </AuthStackNavigator.Navigator>
+  );
+};
+const AdminScreenStackNavigator = createStackNavigator();
 
-export default createAppContainer(AuthAdjustMainNavigator);
+export const AdminScreenNavigator = () => {
+  return (
+    <AdminScreenStackNavigator.Navigator
+      screenOptions={{
+        ...defaultStackNavigationOptions,
+        modalNavOptions,
+      }}
+    >
+      <AdminScreenStackNavigator.Screen
+        name="UserProductsScreen"
+        component={UserProductsScreen}
+        options={UserProductsScreenOptions}
+      />
+      <AdminScreenStackNavigator.Screen
+        name="EditUserProductsScreen"
+        component={EditUserProductsScreen}
+      />
+    </AdminScreenStackNavigator.Navigator>
+  );
+};
+
+const BottomTabNavigator = createBottomTabNavigator();
+
+export const ShopNavigator = () => {
+  return (
+    <BottomTabNavigator.Navigator
+      screenOptions={defaultBottomTabNavigationOptions}
+    >
+      <BottomTabNavigator.Screen
+        name="products"
+        component={ProductsNavigator}
+        options={{
+          tabBarLabel: "Products",
+          tabBarIcon: () => (
+            <AntDesign name="home" size={25} color={Colors.primaryColor} />
+          ),
+        }}
+      />
+      <BottomTabNavigator.Screen
+        name="orders"
+        component={OrdersNavigator}
+        options={{
+          tabBarLabel: "Orders",
+          tabBarIcon: () => (
+            <AntDesign name="skin" size={25} color={Colors.primaryColor} />
+          ),
+        }}
+      />
+      <BottomTabNavigator.Screen
+        name="userProducts"
+        component={AdminScreenNavigator}
+        options={{
+          tabBarLabel: "Products",
+          tabBarIcon: () => (
+            <AntDesign name="database" size={25} color={Colors.primaryColor} />
+          ),
+        }}
+      />
+      <BottomTabNavigator.Screen
+        name="Settings"
+        component={SettingsNavigator}
+        options={{
+          tabBarLabel: "Products",
+          tabBarIcon: () => (
+            <AntDesign name="setting" size={25} color={Colors.primaryColor} />
+          ),
+        }}
+      />
+    </BottomTabNavigator.Navigator>
+  );
+};

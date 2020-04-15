@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useCallback,
-  useReducer,
-  useEffect,
-  useRef,
-} from "react";
+import React, { useState, useCallback, useReducer, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -64,7 +58,9 @@ const EditUserProductsScreen = (props) => {
   const dispatch = useDispatch();
 
   const availableProducts = useSelector((state) => state.products.userProducts);
-  const selectedProductId = props.navigation.getParam("productId");
+  const selectedProductId = props.route.params
+    ? props.route.params.productId
+    : null;
   const selectedProduct = availableProducts.find(
     (prod) => prod.id === selectedProductId
   );
@@ -330,41 +326,3 @@ const styles = StyleSheet.create({
 });
 
 export default EditUserProductsScreen;
-
-// import React, { useRef } from "react";
-// import { View, Button } from "react-native";
-// import RBSheet from "react-native-raw-bottom-sheet";
-
-// const EditUserProductsScreen = (props) => {
-//   const refRBSheet = useRef();
-//   return (
-//     <View
-//       style={{
-//         flex: 1,
-//         justifyContent: "center",
-//         alignItems: "center",
-//         backgroundColor: "#000",
-//       }}
-//     >
-//       <Button
-//         title="OPEN BOTTOM SHEET"
-//         onPress={() => refRBSheet.current.open()}
-//       />
-//       <RBSheet
-//         ref={refRBSheet}
-//         closeOnDragDown={true}
-//         closeOnPressMask={false}
-//         customStyles={{
-//           wrapper: {
-//             backgroundColor: "transparent",
-//           },
-//           draggableIcon: {
-//             backgroundColor: "#000",
-//           },
-//         }}
-//       >
-//       </RBSheet>
-//     </View>
-//   );
-// };
-// export default EditUserProductsScreen;

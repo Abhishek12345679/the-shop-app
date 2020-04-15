@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Button, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Colors from "../constants/Colors";
 
 import { useDispatch } from "react-redux";
@@ -13,7 +13,6 @@ const SettingsScreen = (props) => {
         style={styles.bigasslogoutbtn}
         onPress={() => {
           dispatch(authActions.logout());
-          props.navigation.navigate("Auth");
         }}
       >
         <Text style={styles.text}>Log Out</Text>
@@ -22,7 +21,7 @@ const SettingsScreen = (props) => {
   );
 };
 
-SettingsScreen.navigationOptions = {
+export const screenOptions = {
   headerTitle: "Settings",
 };
 
@@ -36,7 +35,6 @@ const styles = StyleSheet.create({
     fontFamily: "standard-apple-bold",
     fontSize: 20,
     color: Colors.primaryColor,
-
   },
   bigasslogoutbtn: {
     height: 50,
@@ -44,13 +42,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#fff",
-    shadowOffset:{
-      width:3,
-      height:1
+    shadowOffset: {
+      width: 3,
+      height: 1,
     },
-    shadowColor:'#000',
-    shadowOpacity:0.54,
-    marginTop:10
+    shadowColor: "#000",
+    shadowOpacity: 0.54,
+    marginTop: 10,
   },
 });
 

@@ -7,7 +7,7 @@ import {
   StatusBar,
   ImageBackground,
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 
 import { Button } from "react-native-paper";
@@ -22,11 +22,11 @@ const formInputReducer = (state, action) => {
   if (action.type === FORM_INPUT_UPDATE) {
     const updatedInputState = {
       ...state.inputState,
-      [action.inputId]: action.value
+      [action.inputId]: action.value,
     };
     const updatedValidities = {
       ...state.inputValidities,
-      [action.inputId]: action.isValid
+      [action.inputId]: action.isValid,
     };
     let fromIsValid = true;
 
@@ -37,13 +37,13 @@ const formInputReducer = (state, action) => {
     return {
       inputState: updatedInputState,
       inputValidities: updatedValidities,
-      formValidity: fromIsValid
+      formValidity: fromIsValid,
     };
   }
   return state;
 };
 
-const AuthScreen = props => {
+const AuthScreen = (props) => {
   const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -61,13 +61,13 @@ const AuthScreen = props => {
     {
       inputState: {
         email: "",
-        password: ""
+        password: "",
       },
       inputValidities: {
         email: false,
-        password: false
+        password: false,
       },
-      formValidity: false
+      formValidity: false,
     }
   );
 
@@ -82,11 +82,11 @@ const AuthScreen = props => {
           inputFormState.inputState.password
         )
       );
-      setIsSignUp(false);
+      // setIsSignUp(false);
     } catch (err) {
       setError(err.message);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const signInHandler = async () => {
@@ -99,7 +99,7 @@ const AuthScreen = props => {
           inputFormState.inputState.password
         )
       );
-      props.navigation.navigate("Shop");
+      // props.navigation.navigate("Shop");
     } catch (err) {
       setError(err.message);
       setIsLoading(false);
@@ -112,7 +112,7 @@ const AuthScreen = props => {
         type: FORM_INPUT_UPDATE,
         value: inputValue,
         isValid: inputValidity,
-        inputId: inputIdentifier
+        inputId: inputIdentifier,
       });
     },
     [dispatchInputFormState]
@@ -123,7 +123,7 @@ const AuthScreen = props => {
       <ImageBackground
         source={{
           uri:
-            "https://images.pexels.com/photos/1829191/pexels-photo-1829191.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+            "https://images.pexels.com/photos/1829191/pexels-photo-1829191.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
         }}
         style={{ flex: 1, width: "100%", height: "100%" }}
         resizeMode="cover"
@@ -232,43 +232,43 @@ const AuthScreen = props => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   headerText: {
     fontSize: 40,
     fontFamily: "standard-apple-bold",
-    color: "white"
+    color: "white",
   },
   inputContainer: {
     marginVertical: 60,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
   headerContainer: {
     marginVertical: 60,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
   buttonContainer: {
     marginVertical: 30,
-    marginHorizontal: 40
+    marginHorizontal: 40,
   },
   input: {
     color: "white",
     borderColor: "white",
-    fontSize: 15
+    fontSize: 15,
   },
   button: {
     marginVertical: 10,
     height: 50,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   authSwitchText: {
     textDecorationLine: "underline",
-    color: "#fff"
+    color: "#fff",
   },
   authSwitchTextContainer: {
     alignItems: "center",
-    justifyContent: "center"
-  }
+    justifyContent: "center",
+  },
 });
 export default AuthScreen;
