@@ -66,9 +66,13 @@ const ProductsDetailScreen = (props) => {
 };
 
 export const screenOptions = (navData) => {
-  const headerTitle = navData.route.params.productTitle;
+  let headerTitle = navData.route.params.productTitle;
+  if(headerTitle.length >= 16){
+    headerTitle = headerTitle.substr(0,15) + '...'
+  }
   return {
     headerTitle: headerTitle,
+    headerMode:'screen'
   };
 };
 

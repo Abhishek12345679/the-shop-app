@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 
 const AppContainer = (props) => {
   const isAuth = useSelector((state) => !!state.auth.token);
-  const didTryAutoLogin = useSelector((state) => state.auth.didTryAutoLogin);
+  const didTryAutoLogin = useSelector((state) => !!state.auth.didTryAutoLogin);
   return (
     <NavigationContainer>
       {isAuth && <ShopNavigator />}

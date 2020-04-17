@@ -9,32 +9,12 @@ import config from "../../config";
 let timer;
 
 export const setDidTryAL = () => {
-  return { type: DID_TRY_AL };
-};
-
-const clearLogOutTimer = () => {
-  if (timer) {
-    clearTimeout(timer);
-  }
-};
-
-const setLogOutTimer = (expirationTime) => {
-  return (dispatch) => {
-    timer = setTimeout(() => {
-      dispatch(logout());
-    }, expirationTime);
-  };
-};
-
-export const logout = () => {
-  clearLogOutTimer();
-  deleteDataFromStorage();
-  return { type: LOG_OUT };
+  return { type: SET_DID_TRY_AL };
 };
 
 export const authenticate = (token, userId, email, expiryTime) => {
   return (dispatch) => {
-    dispatch(setLogOutTimer(expiryTime));
+    // dispatch(setLogOutTimer(expiryTime)); //some fault here
     dispatch({
       type: AUTHENTICATE,
       token: token,
@@ -85,14 +65,16 @@ export const signin = (email, password) => {
         parseInt(resData.expiresIn) * 1000
       )
     );
-    const expirationDate = new Date(
-      new Date().getTime() + parseInt(resData.expiresIn) * 1000
-    );
+
+    const expirationDate = UTCtoISTConverter(resData.expiresIn);
+
+    console.log(expirationDate);
+
     saveDataToStorage(
       resData.idToken,
       resData.localId,
-      expirationDate,
-      resData.email
+      resData.email,
+      expirationDate
     );
   };
 };
@@ -136,17 +118,18 @@ export const signup = (email, password) => {
         parseInt(resData.expiresIn) * 1000
       )
     );
-    const expirationDate = new Date(
-      new Date().getTime() + parseInt(resData.expiresIn) * 1000
-    );
+
+    const expirationDate = UTCtoISTConverter(resData.expiresIn);
+
     saveDataToStorage(
       resData.idToken,
       resData.localId,
-      expirationDate,
-      resData.email
+      resData.email,
+      expirationDate
     );
   };
 };
+
 const saveDataToStorage = (token, userId, email, expirationDate) => {
   AsyncStorage.setItem(
     "userData",
@@ -154,11 +137,43 @@ const saveDataToStorage = (token, userId, email, expirationDate) => {
       token: token,
       userId: userId,
       email: email,
-      expiryDate: expirationDate.toISOString(),
+      expiryDate: expirationDate,
     })
   );
 };
 
-const deleteDataFromStorage = () => {
+const clearLogOutTimer = () => {
+  if (timer) {
+    clearTimeout(timer);
+  }
+};
+
+const setLogOutTimer = (expirationTime) => {
+  return (dispatch) => {
+    timer = setTimeout(() => {
+      dispatch(logout());
+    }, expirationTime);
+  };
+};
+
+export const logout = () => {
+  clearLogOutTimer();
   AsyncStorage.removeItem("userData");
+  return { type: LOG_OUT };
+};
+
+const UTCtoISTConverter = (expiresInTime) => {
+  let d = new Date();
+  console.log(d.toISOString());
+  const offset = 5.5 * 60;
+
+  const expirytime = parseInt(expiresInTime) / 60;
+
+  let minutes = d.setMinutes(d.getMinutes() + offset + expirytime);
+  console.log(minutes);
+
+  let datestring = d.toISOString();
+  console.log(datestring);
+
+  return datestring;
 };

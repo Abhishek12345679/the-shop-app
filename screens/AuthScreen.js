@@ -71,35 +71,24 @@ const AuthScreen = (props) => {
     }
   );
 
-  const signUpHandler = async () => {
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      await dispatch(
-        authActions.signup(
-          inputFormState.inputState.email,
-          inputFormState.inputState.password
-        )
+  const authHandler = async () => {
+    let action;
+    if (isSignUp) {
+      action = authActions.signup(
+        inputFormState.inputState.email,
+        inputFormState.inputState.password
       );
-      // setIsSignUp(false);
-    } catch (err) {
-      setError(err.message);
-      setIsLoading(false);
+    } else {
+      action = authActions.signin(
+        inputFormState.inputState.email,
+        inputFormState.inputState.password
+      );
     }
-  };
-
-  const signInHandler = async () => {
     setError(null);
     setIsLoading(true);
     try {
-      await dispatch(
-        authActions.signin(
-          inputFormState.inputState.email,
-          inputFormState.inputState.password
-        )
-      );
-      // props.navigation.navigate("Shop");
+      await dispatch(action);
+      // props.navigation.navigate('Shop');
     } catch (err) {
       setError(err.message);
       setIsLoading(false);
@@ -168,7 +157,7 @@ const AuthScreen = (props) => {
           <View style={styles.buttonContainer}>
             {!isSignUp && (
               <TouchableOpacity
-                onPress={signInHandler}
+                onPress={authHandler}
                 activeOpacity={0.82}
                 disabled={!inputFormState.formValidity}
               >
@@ -182,7 +171,7 @@ const AuthScreen = (props) => {
             )}
             {isSignUp && (
               <TouchableOpacity
-                onPress={signUpHandler}
+                onPress={authHandler}
                 activeOpacity={0.82}
                 disabled={!inputFormState.formValidity}
               >
@@ -191,16 +180,7 @@ const AuthScreen = (props) => {
                     Sign Up
                   </Button>
                 )}
-                {isLoading && (
-                  <Button
-                    icon="loading"
-                    style={styles.button}
-                    mode="contained"
-                    color="#fff"
-                  >
-                    Loading
-                  </Button>
-                )}
+                {isLoading && <ActivityIndicator size="small" color="white" />}
               </TouchableOpacity>
             )}
           </View>
@@ -216,7 +196,7 @@ const AuthScreen = (props) => {
           {!isSignUp && (
             <TouchableOpacity
               style={styles.authSwitchTextContainer}
-              onPress={() => setIsSignUp(true)}
+              onPress={() => setIsSignUp((prevState) => !prevState)}
             >
               <Text style={styles.authSwitchText}>
                 Not a member ? Sign Up Now

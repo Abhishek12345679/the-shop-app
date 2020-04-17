@@ -1,5 +1,7 @@
 import React from "react";
 
+import { TransitionPresets } from "@react-navigation/stack";
+
 import ProductsOverviewScreen, {
   screenOptions as ProductsOverviewScreenOptions,
 } from "../screens/ProductOverviewScreen";
@@ -29,24 +31,10 @@ import { AntDesign } from "@expo/vector-icons";
 
 enableScreens();
 
-const modalNavOptions = {
-  mode: "none",
-  headerMode: "none", // This ensures we don't get two top bars.,
-  transparentCard: true,
-  defaultNavigationOptions: {
-    navigationOptions: {
-      cardStyle: {
-        backgroundColor: "transparent",
-        opacity: 1,
-      },
-      transitionConfig: () => ({
-        containerStyle: {
-          backgroundColor: "transparent",
-        },
-      }),
-    },
-  },
-};
+// const modalNavOptions = {
+//   mode: "none",
+//   headerMode: "none", // This ensures we don't get two top bars.,
+// };
 
 // default stack options
 const defaultStackNavigationOptions = {
@@ -75,8 +63,8 @@ const defaultStackNavigationOptions = {
 const defaultBottomTabNavigationOptions = {
   defaultNavigationOptions: {
     tabBarOptions: {
-      activeTintColor: Colors.primaryColor,
-      style: { backgroundColor: "#ffffff", height: 57 },
+      activeTintColor: "#fff",
+      style: { backgroundColor: "#ffffff", height: 60 },
       inactiveTintColor: "#000",
     },
   },
@@ -141,11 +129,15 @@ export const SettingsNavigator = () => {
     </SettingsStackNavigator.Navigator>
   );
 };
+
 const AuthStackNavigator = createStackNavigator();
 export const AuthNavigator = () => {
   return (
     <AuthStackNavigator.Navigator screenOptions={defaultStackNavigationOptions}>
-      <AuthStackNavigator.Screen name="AuthScreen" component={AuthScreen} 
+      <AuthStackNavigator.Screen
+        name="AuthScreen"
+        component={AuthScreen}
+        options={{ headerShown: false }}
       />
     </AuthStackNavigator.Navigator>
   );
@@ -155,10 +147,19 @@ const AdminScreenStackNavigator = createStackNavigator();
 export const AdminScreenNavigator = () => {
   return (
     <AdminScreenStackNavigator.Navigator
-      screenOptions={{
-        ...defaultStackNavigationOptions,
-        modalNavOptions,
-      }}
+      screenOptions={defaultStackNavigationOptions}
+      initialRouteName="Home"
+      screenOptions={({ route, navigation }) => ({
+        gestureEnabled: true,
+        cardOverlayEnabled: true,
+        headerStatusBarHeight:
+          navigation.dangerouslyGetState().routes.indexOf(route) > 0
+            ? 0
+            : undefined,
+        ...TransitionPresets.ModalPresentationIOS,
+      })}
+      mode="modal"
+      // headerMode="none"
     >
       <AdminScreenStackNavigator.Screen
         name="UserProductsScreen"
@@ -168,6 +169,7 @@ export const AdminScreenNavigator = () => {
       <AdminScreenStackNavigator.Screen
         name="EditUserProductsScreen"
         component={EditUserProductsScreen}
+        options={{ headerShown: false }}
       />
     </AdminScreenStackNavigator.Navigator>
   );
@@ -185,9 +187,17 @@ export const ShopNavigator = () => {
         component={ProductsNavigator}
         options={{
           tabBarLabel: "Products",
-          tabBarIcon: () => (
-            <AntDesign name="home" size={25} color={Colors.primaryColor} />
+          tabBarIcon: ({ focused, color, size }) => (
+            <AntDesign
+              name="home"
+              size={focused ? size + 5 : size}
+              color={color}
+            />
           ),
+        }}
+        tabBarOptions={{
+          activeTintColor: "tomato",
+          inactiveTintColor: "gray",
         }}
       />
       <BottomTabNavigator.Screen
@@ -195,29 +205,53 @@ export const ShopNavigator = () => {
         component={OrdersNavigator}
         options={{
           tabBarLabel: "Orders",
-          tabBarIcon: () => (
-            <AntDesign name="skin" size={25} color={Colors.primaryColor} />
+          tabBarIcon: ({ focused, color, size }) => (
+            <AntDesign
+              name="skin"
+              size={focused ? size + 5 : size}
+              color={color}
+            />
           ),
+        }}
+        tabBarOptions={{
+          activeTintColor: "tomato",
+          inactiveTintColor: "gray",
         }}
       />
       <BottomTabNavigator.Screen
         name="userProducts"
         component={AdminScreenNavigator}
         options={{
-          tabBarLabel: "Products",
-          tabBarIcon: () => (
-            <AntDesign name="database" size={25} color={Colors.primaryColor} />
+          tabBarLabel: "Listings",
+          tabBarIcon: ({ focused, color, size }) => (
+            <AntDesign
+              name="database"
+              size={focused ? size + 5 : size}
+              color={color}
+            />
           ),
+        }}
+        tabBarOptions={{
+          activeTintColor: "tomato",
+          inactiveTintColor: "gray",
         }}
       />
       <BottomTabNavigator.Screen
         name="Settings"
         component={SettingsNavigator}
         options={{
-          tabBarLabel: "Products",
-          tabBarIcon: () => (
-            <AntDesign name="setting" size={25} color={Colors.primaryColor} />
+          tabBarLabel: "Settings",
+          tabBarIcon: ({ focused, color, size }) => (
+            <AntDesign
+              name="setting"
+              size={focused ? size + 5 : size}
+              color={color}
+            />
           ),
+        }}
+        tabBarOptions={{
+          activeTintColor: "tomato",
+          inactiveTintColor: "gray",
         }}
       />
     </BottomTabNavigator.Navigator>

@@ -24,7 +24,7 @@ import Colors from "../constants/Colors";
 
 const ProductOverviewScreen = (props) => {
   const availableProducts = useSelector((state) => state.products.products);
-  const auth = useSelector((state) => state.auth.email);
+  // const auth = useSelector((state) => state.auth.email);
 
   const dispatch = useDispatch();
 
@@ -168,7 +168,7 @@ const ProductOverviewScreen = (props) => {
       >
         Logged in as
         <Text> </Text>
-        {auth}
+        {/* {auth} */}
       </Snackbar>
     </View>
   );
@@ -181,7 +181,7 @@ export const screenOptions = (navData) => {
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
           title="cart"
-          iconName={"shoppingcart"}
+          iconName="shoppingcart"
           onPress={() => {
             navData.navigation.navigate("cartScreen");
           }}

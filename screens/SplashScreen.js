@@ -14,23 +14,25 @@ const SplashScreen = (props) => {
 
       if (!userData) {
         // props.navigation.navigate("Auth");
-        dispatch(authActions.didTryAL())
+        dispatch(authActions.setDidTryAL());
         return;
       }
 
       const transformedData = JSON.parse(userData);
+      console.log("userData from AsyncStorage", transformedData);
       const { token, userId, expiryDate } = transformedData;
 
       const expirationDate = new Date(expiryDate);
+      console.log("getting expiration Date", expirationDate);
       if (expirationDate <= new Date() || !token || !userId) {
         // props.navigation.navigate("Auth");
-        dispatch(authActions.didTryAL())
+        dispatch(authActions.setDidTryAL());
         return;
       }
       // props.navigation.navigate("Shop");
 
       const expirationTime = expirationDate.getTime() - new Date().getTime();
-
+      console.log("authenticating", expirationTime);
       dispatch(authActions.authenticate(token, userId, expirationTime));
     };
     tryLogin();

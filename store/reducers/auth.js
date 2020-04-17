@@ -1,4 +1,4 @@
-import { AUTHENTICATE, LOG_OUT, DID_TRY_AL } from "../actions/auth";
+import { AUTHENTICATE, LOG_OUT, SET_DID_TRY_AL } from "../actions/auth";
 
 const initialState = {
   token: null,
@@ -16,7 +16,7 @@ const AuthReducer = (state = initialState, action) => {
         email: action.email,
         didTryAutoLogin: true,
       };
-    case DID_TRY_AL:
+    case SET_DID_TRY_AL:
       return {
         ...state,
         didTryAutoLogin: true,
