@@ -17,6 +17,7 @@ const SettingsScreen = (props) => {
       >
         <Text style={styles.text}>Log Out</Text>
       </TouchableOpacity>
+      
     </View>
   );
 };
